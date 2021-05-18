@@ -144,7 +144,15 @@ int main()
     reply.detach();
 
     //request a test
-    startTest("LongRun", LogLevel::Pass_Fail);
+    startTest("LongRun4", LogLevel::Pass_Fail);
+    startTest("LongRun3", LogLevel::Pass_Fail);
+    startTest("LongRun2", LogLevel::Pass_Fail);
+    startTest("LongRun1", LogLevel::Pass_Fail);
+    startTest("Add: 4+0=4", LogLevel::Pass_Fail);
+    startTest("Mul: 4*0=4", LogLevel::Pass_Fail);
+    startTest("LongRun4", LogLevel::Pass_Fail);
+    startTest("Add: 4+0=4", LogLevel::Pass_Fail);
+    startTest("Mul: 4*0=4", LogLevel::Pass_Fail);
     startTest("Add: 4+0=4", LogLevel::Pass_Fail);
     startTest("Mul: 4*0=4", LogLevel::Pass_Fail);
 

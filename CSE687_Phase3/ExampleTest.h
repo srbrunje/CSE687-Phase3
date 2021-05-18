@@ -71,8 +71,9 @@ class LongRunFunctor{
 public:
 	LongRunFunctor(int A, int B) : _A{ A }, _B{ B }{}
 	bool operator()() {
-		_A = 1;
-		_B = 200;
+		if(_A < 1) _A = 1;
+		if(_B < 200) _B = 200;
+
 		for (int i = 0; i < _A; i++)
 		{
 			::Sleep(_B);
