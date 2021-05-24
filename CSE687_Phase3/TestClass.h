@@ -10,11 +10,7 @@
 * Authors: Steve Brunjes, Zach Demers, Leo Garza
 * Group 6
 *
-* Date: 04-26-2021
-*
 * File: TestClass.h
-*
-* Data Defined: class TestClass
 *
 * Description: Implements a class to handle the
 *              creation and manipulation of a
@@ -52,7 +48,8 @@ public:
 	// Custom Constructor
 	TestClass(CallableObject aTestMethod,
 		LogLevel aLogLevel,
-		std::string aName = "", std::string customErrorMessage = "Default Error Message: The test did not pass. Something wrong must have occurred");
+		std::string aName = "",
+		std::string aErrMsg = "Default Error Message: The test did not pass. Something wrong must have occurred");
 
 	/*************************************************************************
 	*
@@ -110,8 +107,6 @@ public:
 	void SetLogLevel(LogLevel level);
 
 
-
-
 	/*************************************************************************
 	*
 	* Getter for the log level
@@ -123,19 +118,16 @@ public:
 	*************************************************************************/
 	LogLevel GetLogLevel() const;
 
-	///*************************************************************************
-	//*
-	//* Setter for the result of the test
-	//*
-	//* Parameter: 	result: pass or fail, or not run (default)
-	//*
-	//* return:	None
-	//*
-	//*************************************************************************/
-	//void SetTestResult(TestResult result);
 
-	// Replacing the above with "RunTest()" rather than having an outside source
-	//   determine and set the result, this class can run it internally
+	/*************************************************************************
+	*
+	* Runs the _testMethod and returns a pointer to the _testResult generated
+	*
+	* Parameter: 	None
+	*
+	* return:	const pointer to _testResult
+	*
+	*************************************************************************/
 	const TestResult* RunTest();
 
 
@@ -151,12 +143,11 @@ public:
 	TestResult GetTestResult() const;
 
 private:
-	std::string _name;
-	std::string _errorMessage;
-	CallableObject _testMethod;
-	LogLevel _logLevel;
-	TestResult _testResult;
-
+	std::string _name;           // the name of the test
+	std::string _errorMessage;   // an error message to display if the test fails without exceptions
+	CallableObject _testMethod;  // a method to test
+	LogLevel _logLevel;          // a verbosity at which to log data
+	TestResult _testResult;      // the result of the test after calling RunTest()
 };
 
 #endif // !__TEST_CLASS_H

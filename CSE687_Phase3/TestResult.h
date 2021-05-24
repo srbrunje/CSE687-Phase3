@@ -8,11 +8,7 @@
 * Authors: Steve Brunjes, Zach Demers, Leo Garza
 * Group 6
 *
-* Date: 04-26-2021
-*
 * File: TestClass.h
-*
-* Data Defined: class TestResult
 *
 * Description: Implements a class to handle the
 *              result of a test.
@@ -20,7 +16,6 @@
 ***********************************************/
 
 #include <string>
-
 #include "utils.h"		// common utility functions and constants
 
 
@@ -32,7 +27,7 @@ class TestResult {
 public:
 	// Public enum for TestResult's current status
 	enum class Status {
-		PASS, FAIL, Fail_EXC, NOT_RUN
+		PASS, FAIL, FAIL_EXC, NOT_RUN
 	};
 
 private:
@@ -62,9 +57,9 @@ public:
 	void SetLogLevel(const LogLevel aLogLevel);
 
 	// Getters
-	std::string     GetName() const;
-	Status          GetStatus() const;
-	std::string     GetErrorMessage() const;
-	double          GetDuration() const;	// returns the time taken to run the test in microseconds
-	LogLevel GetLogLevel() const;
+	std::string GetName() const;
+	Status      GetStatus() const;
+	std::string GetErrorMessage() const;
+	double      GetDuration() const;	// returns the time taken to run the test in microseconds
+	LogLevel    GetLogLevel() const;
 };

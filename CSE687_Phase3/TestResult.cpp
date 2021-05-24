@@ -6,8 +6,6 @@
 * Authors: Steve Brunjes, Zach Demers, Leo Garza
 * Group 6
 *
-* Date: 04-26-2021
-*
 * File: TestResult.cpp
 *
 * Description: Implements a class to handle the
@@ -16,8 +14,6 @@
 ***********************************************/
 
 #include "TestResult.h"
-
-
 
 
 /** Default Constructor - public

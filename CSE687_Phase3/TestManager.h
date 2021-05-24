@@ -7,8 +7,6 @@
 * Authors: Steve Brunjes, Zach Demers, Leo Garza
 * Group 6
 *
-* Date: 04-22-2021
-*
 * File: TestManager.h
 *
 * Description: Implements a class to handle the
@@ -23,27 +21,43 @@
 #include "TestClass.h"
 #include "TestLogger.h"
 
+
 class TestManager
 {
 public:
 
-	
-	static TestManager *getInstance();
+	static TestManager* GetInstance();
+
+	/*************************************************************************
+	*
+	* Constructor for the TestManager class
+	*
+	* Parameter: 	None
+	*
+	* return:	None
+	*
+	*************************************************************************/
+	TestManager();
+
 
 	/*************************************************************************
 	*
 	* Creates a new test
 	*
-	* Parameter: 	testMethd: the test to run
+	* Parameter: 	aTestMethod: the test to run
+	*				aLogLevel: the level of logging desired
+	*				aName: the name of the test
+	*				aError: a default error message
 	*
 	* return:	None
 	*
 	*************************************************************************/
-	void CreateTest(TestClass::CallableObject testMethod,
+	void CreateTest(TestClass::CallableObject aTestMethod,
 		const LogLevel aLogLevel,
-		const std::string& aName, const std::string& error);
+		const std::string& aName,
+		const std::string& aError);
 
-	void CreateTest(TestClass::CallableObject testMethod,
+	void CreateTest(TestClass::CallableObject aTestMethod,
 		const LogLevel aLogLevel,
 		const std::string& aName);
 
@@ -61,30 +75,30 @@ public:
 
 	/*************************************************************************
 	*
-	* sets the name of the file to write test results to
+	* Sets the name of the file to write test results to
 	*
-	* Parameter: 	filename: the name of the file
+	* Parameter: 	aFilePath: the path to the file to log data to
 	*
 	* return:	bool: successfully set (true) or not (false)
 	*
 	*************************************************************************/
-	bool SetOutputFile(const std::string& filename);
+	bool SetOutputFile(const std::string& aFilePath);
 
 
 	/*************************************************************************
 	*
-	* sets the output destination for the console messages
+	* Sets the output destination for the console messages
 	*
-	* Parameter: 	stream: the output stream
+	* Parameter: 	aStream: the output stream
 	*
 	* return:	None
 	*
 	*************************************************************************/
-	void SetOutputStream(std::ostream stream);
+	void SetOutputStream(std::ostream& aStream);
 
 	/*************************************************************************
 	*
-	* sets the Logger to output to a file or not based on the input
+	* Sets the TestLogger to output to a file or not based on the input
 	*
 	* Parameter: 	bool: output to file if true, do not if false
 	*
@@ -95,7 +109,7 @@ public:
 
 	/*************************************************************************
 	*
-	* sets the Logger to output to a stream or not based on the input
+	* Sets the TestLogger to output to a stream or not based on the input
 	*
 	* Parameter: 	bool: output to stream if true, do not if false
 	*
@@ -107,37 +121,46 @@ public:
 	/*************************************************************************
 	*
 	* Passes all TestResult objects contained as members in the _tests vector
-	*   to the Logger for data output and logging
-	*
-	* Parameter: 	None
-	*
-	* return:	bool: successful or not
-	*
-	*************************************************************************/
-	void ReportResults();
-		
-	void runTest(int testNumber);
-
-
-	int FindTestNumber(std::string name);
-
-private:
-	/*************************************************************************
-	*
-	* Constructor for the TestManager class
+	*   to the TestLogger for data output and logging
 	*
 	* Parameter: 	None
 	*
 	* return:	None
 	*
 	*************************************************************************/
-	TestManager();
+	void ReportResults();
 
-	static TestManager* instance;
+	/*************************************************************************
+	*
+	* Runs a specified test based on the index number in the _tests vector or
+	*    returns false if the index given is out of bounds.
+	*
+	* Parameter: aTestNumber: index in _tests vector denoting the test to run
+	*
+	* return:	bool: valid test number input (true) or not (false)
+	*
+	*************************************************************************/
+	bool RunTest(int aTestNumber);
+
+	/*************************************************************************
+	*
+	* Runs a specified test based on the index number in the _tests vector or
+	*    returns false if the index given is out of bounds.
+	*
+	* Parameter: aTestNumber: index in _tests vector denoting the test to run
+	*
+	* return:	bool: valid test number input (true) or not (false)
+	*
+	*************************************************************************/
+	int FindTestNumber(const std::string& aName);
+
+
+private:
+	static TestManager*  instance;
 	std::vector<TestClass> _tests;	// series of tests to execute
-	TestLogger _logger;					// the logger to handle logging test results
+	TestLogger _logger;				// the logger to handle logging test results
 	int _numPass;					// number of tests that passed
 	int _numFail;					// number of tests that failed
-	int _numExc;						// number of tests that had exceptions
-	double _timeElapsed;			// time it took to execute entire batch of tests in seconds
+	int _numExc;					// number of tests that had exceptions
+	double _timeElapsed;			// time it took to execute entire batch of tests in microseconds
 };

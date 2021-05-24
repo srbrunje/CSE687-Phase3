@@ -10,8 +10,6 @@
 * Authors: Steve Brunjes, Zach Demers, Leo Garza
 * Group 6
 *
-* Date: 04-26-2021
-*
 * File: utils.h
 *
 * Data Defined: namespace timing
@@ -24,9 +22,11 @@
 ***********************************************/
 
 
-#include <chrono> // for timing
-#include <string> // for to_string function
-#include <exception>    // std::exception
+#include <chrono>       // for timing
+#include <string>       // for std::string
+#include <exception>    // for std::exception
+#include <sstream>      // for std::stringstream in DblToStr()
+#include <iomanip>      // for std::fixed and std::setpricision in DblToStr()
 
 // Set of shorthands for timing purposes
 namespace timing {
@@ -44,48 +44,79 @@ namespace timing {
 }
 
 // Enum class to define the level of logging
-// Since it is a class, it has scoping protection
-// i.e. must use "LogLevel::" to access it
 enum class LogLevel
 {
-	Pass_Fail = 1,
-	Pass_Fail_with_error_message = 2,
-	Pass_Fail_with_test_duration = 3,
-	Pass_Fail_with_error_message_and_test_duration = 4,
-	Pass_Fail_With_error_message_and_expected_value = 5
+	Pass_Fail,
+	Pass_Fail_with_error_message,
+	Pass_Fail_with_test_duration,
+	Pass_Fail_with_error_message_and_test_duration
 };
 
-/** FormatTimeString - private
-	* Description: Formats the time string. Scales the units to report units in 1000x incraments.
-	*              seconds, milli, micro, nano, pico
-	* Parameter 0: The time to scale
-	* Return: The formated string
-	*/
-	/** FormatTimeString - private
-	 * Description: Formats the time string. Scales the units to report units in 1000x incraments.
-	 *              seconds, milli, micro, nano, pico
-	 * Parameter 0: The time to scale
-	 * Return: The formated string
-	*/
+
+/** DblToStr - public
+* Description: Converts a double into a string using a specified number of decimals along with
+*              a comma separator if not deselected.
+* Parameter 0: the double value to convert to a string
+* Parameter 1: the number of decimal places to include (default=2)
+* Parameter 2: use a comma separator (true, default) or don't (false)
+* Return: the double value in std::string form
+*/
+static std::string DblToStr(const double aVal,
+	const unsigned int aNumDecimalPlaces = 2,
+	const bool useCommaSeparator = true)
+{
+	// Use a stringstream with iomanip to perform decimal place specification
+	// and then place the given value into that stringstream
+	std::ostringstream ss;
+	ss << std::fixed << std::setprecision(aNumDecimalPlaces) << aVal;
+
+	// Conver the stringstream into a string
+	std::string str = ss.str();
+
+	// If using a comma separator, insert commas where appropriate
+	if (useCommaSeparator) {
+		// Start by finding the start of the number in the 1's column
+		size_t pos = str.find('.'); // if the string contains a decimal point, start there
+		if (pos == std::string::npos) {
+			// If it doesn't, simply start at the end of the string and move backwards
+			pos = str.length();
+		}
+		// Add a comma ever 3 positions left of the decimal place until the front is reached
+		while (pos > 3 && pos != std::string::npos) {
+			pos -= 3;
+			str.insert(pos, 1, ',');
+		}
+	}
+	return str;
+}
+
+
+
+/** FormatTimeString - public
+* Description: Formats the time string. Scales the units to report units in 1000x incraments.
+*              seconds, milli, micro, nano
+* Parameter 0: The time to scale
+* Return: The formated string
+*/
 static std::string FormatTimeString(double dDurration)
 {
 	std::string rtn = "";
 
 	if (dDurration > 1000000) //scale to seconds
 	{
-		rtn = std::to_string(dDurration / 1000000) + " seconds";
+		rtn = DblToStr(dDurration / 1000000) + " seconds";
 	}
 	else if (dDurration > 1000) //scale to milliseconds
 	{
-		rtn = std::to_string(dDurration / 1000) + " milliseconds";
+		rtn = DblToStr(dDurration / 1000) + " milliseconds";
 	}
 	else if (dDurration < 1) //scale to nanoseconds
 	{
-		rtn = std::to_string(dDurration * 1000) + " nanoseconds";
+		rtn = DblToStr(dDurration * 1000) + " nanoseconds";
 	}
-	else //milliseconds
+	else //microseconds
 	{
-		rtn = std::to_string(dDurration) + " microseconds";
+		rtn = DblToStr(dDurration) + " microseconds";
 	}
 
 	return rtn;
