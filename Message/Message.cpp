@@ -13,12 +13,21 @@ using SUtils = Utilities::StringHelper;
 
 //----< default constructor results in Message with no attributes >----
 
-Message::Message() {}
+Message::Message() 
+{
+    author_ = "";
+    timestamp_ = "";
+    loglevel_ = LogLevel::INVALID;
+    attributes_ = Attributes();
+}
 
 //----< constructor accepting dst and src addresses >------------------
 
 Message::Message(EndPoint to, EndPoint from)
 {
+  author_ = "";
+  timestamp_ = "";
+  loglevel_ = LogLevel::INVALID;
   attributes_["to"] = to.toString();
   attributes_["from"] = from.toString();
 }
@@ -113,16 +122,31 @@ void Message::name(const std::string& nm)
 
 
 
-void Message::logLevel(const LogLevel& ll)
+std::string Message::author()
 {
-    loglevel_ = ll;
+    return author_;
+}
+void Message::author(const std::string& auth)
+{
+    author_ = auth;
 }
 
-
+std::string Message::timestamp()
+{
+    return timestamp_;
+}
+void Message::timestamp(const timing::hack& time)
+{
+    timestamp_ = timing::GetDateStr(time);
+}
 
 LogLevel Message::logLevel()
 {
     return loglevel_;
+}
+void Message::logLevel(const LogLevel& ll)
+{
+    loglevel_ = ll;
 }
 
 

@@ -97,6 +97,10 @@ namespace MsgPassingCommunication
     std::string command();
     void command(const std::string& cmd);
 
+    std::string author();
+    void author(const std::string& auth);
+    std::string timestamp();
+    void timestamp(const timing::hack& time);
     LogLevel logLevel();
     void logLevel(const LogLevel& ll);
     
@@ -111,9 +115,11 @@ namespace MsgPassingCommunication
     std::ostream& show(std::ostream& out = std::cout);
 
   private:
-    Attributes attributes_;
-    LogLevel loglevel_;
+    std::string author_;
+    std::string timestamp_;
+    LogLevel    loglevel_;
 
+    Attributes  attributes_;
     // name            : msgName
     // command         : msg Command
     // to              : dst EndPoint

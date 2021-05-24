@@ -86,12 +86,14 @@ void startTest(std::string testName, LogLevel logLevel)
 
     // create the message
     Message testRequest(serverEP, clientEP);
-    testRequest.name(testName); //the name of the test to run
     
-    //the log level
+    // set metadata
+    testRequest.name(testName); //the name of the test to run
+    testRequest.author("some author");
+    testRequest.timestamp(timing::now()); // timestamp when test request is sent
     testRequest.logLevel(logLevel);
 
-    //set status
+    // post the message
     comm.postMessage(testRequest);
 
     comm.stop();
