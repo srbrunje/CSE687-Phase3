@@ -1,10 +1,21 @@
-#ifndef __TESTLOGGER_H
-#define __TESTLOGGER_H
+#ifndef __LOGGER_H
+#define __LOGGER_H
 
-
-/*******************************************************************
-* TODO: Remember to insert a file header eventually
-*******************************************************************/
+/***********************************************
+* CSE678 Object Oriented Design
+*
+* Spring 2021
+*
+* Authors: Steve Brunjes, Zach Demers, Leo Garza
+* Group 6
+*
+* File: Logger.h
+*
+* Description: Defines a class that is used for
+*              logging output to a file and/or
+*              a stream.
+*
+***********************************************/
 
 
 #include <string>
@@ -19,10 +30,7 @@ private:
 	bool                  _outputToFile;     // logs to file if true, does not if false
 	bool                  _outputToStream;   // logs to stream if true, does not if false
 	std::filesystem::path _outputFile;       // file path to where data is logged
-	//std::ostream          _outputStream;	 // ostream to pipe data to
-
-	// Private Member Functions (PMF)
-	// - none for now
+	std::ostream*         _outputStream;	 // ostream to pipe data to
 
 public:
 	// Constructors
@@ -32,13 +40,13 @@ public:
 	void SetOutputToFile(const bool bOutputToFile);
 	void SetOutputToStream(const bool bOutputToStream);
 	bool SetOutputFile(const std::string& aPathToFile);
-	//void SetOutputStream(std::ostream& aStream);
+	void SetOutputStream(std::ostream& aStream);
 
 	// Getters
 	bool IsOutputtingToFile() const;
 	bool IsOutputtingToStream() const;
 	std::string GetOutputFile() const;
-	//std::ostream GetOutputStream() const;
+	std::ostream* GetOutputStream() const;
 
 	// Support Functions
 	void LogResult(const TestResult& aTestResultPtr);
@@ -46,4 +54,4 @@ public:
 	void ClearContents();
 };
 
-#endif // !__TESTLOGGER_H
+#endif // !__LOGGER_H
