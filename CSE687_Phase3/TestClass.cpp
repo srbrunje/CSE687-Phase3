@@ -6,6 +6,8 @@
 * Authors: Steve Brunjes, Zach Demers, Leo Garza
 * Group 6
 *
+* Date: 04-26-2021
+*
 * File: TestClass.cpp
 *
 * Description: Implements a class to handle the
@@ -20,14 +22,14 @@
 
 
 /*************************************************************************
-*
-* Constructor for the TestClass class
-*
-* Parameter: 	None
-*
-* return:	None
-*
-*************************************************************************/
+	*
+	* Constructor for the TestClass class
+	*
+	* Parameter: 	None
+	*
+	* return:	None
+	*
+	*************************************************************************/
 TestClass::TestClass()
 {
 	_name = "";
@@ -40,17 +42,16 @@ TestClass::TestClass()
 * Parameter 0: a method to be tested
 * Parameter 1: a log level for output
 * Parameter 2: a name for the test (defaults to an empty string)
-* Parameter 3: a custom error message if the test fails (contains default)
 * Return: nothing
 */
 TestClass::TestClass(CallableObject aTestMethod,
 	LogLevel aLogLevel,
 	std::string aName,
-	std::string aErrMsg)
+	std::string customErrorMessage)
 	: _testMethod{ aTestMethod }
 	, _logLevel{ aLogLevel }
 	, _name{ aName }
-	, _errorMessage{ aErrMsg }
+	, _errorMessage{customErrorMessage}
 {
 	_testResult = TestResult(_name);
 }
@@ -59,14 +60,14 @@ TestClass::TestClass(CallableObject aTestMethod,
 *
 * Setter for the test name
 *
-* Parameter: 	aName: The name of the test
+* Parameter: 	name: The name of the test
 *
 * return:	None
 *
 *************************************************************************/
-void TestClass::SetName(std::string aName)
+void TestClass::SetName(std::string name)
 {
-	_name = aName;
+	_name = name;
 }
 
 /*************************************************************************
@@ -87,14 +88,14 @@ std::string TestClass::GetName() const
 *
 * Setter for the test method refrence
 *
-* Parameter: 	aMethod: a refrence to the test that will be run
+* Parameter: 	method: a refrence to the test that will be run
 *
 * return:	None
 *
 *************************************************************************/
-void TestClass::SetTestMethod(TestClass::CallableObject aMethod)
+void TestClass::SetTestMethod(TestClass::CallableObject method)
 {
-	_testMethod = aMethod;
+	_testMethod = method;
 }
 
 /*************************************************************************
@@ -115,14 +116,14 @@ TestClass::CallableObject TestClass::GetTestMethod() const
 *
 * Setter for the log level
 *
-* Parameter: 	aLevel: the level of logging for this test
+* Parameter: 	level: the level of logging for this test
 *
 * return:	None
 *
 *************************************************************************/
-void TestClass::SetLogLevel(LogLevel aLevel)
+void TestClass::SetLogLevel(LogLevel level)
 {
-	_logLevel = aLevel;
+	_logLevel = level;
 }
 
 /*************************************************************************
@@ -138,6 +139,23 @@ LogLevel TestClass::GetLogLevel() const
 {
 	return _logLevel;
 }
+
+///*************************************************************************
+//*
+//* Setter for the result of the test
+//*
+//* Parameter: 	TestResult class with all relevant metadata
+//*
+//* return:	None
+//*
+//*************************************************************************/
+//void TestClass::SetTestResult(TestResult result)
+//{
+//	_testResult = result;
+//}
+
+// Replacing the above with "RunTest()" rather than having an outside source
+//   determine and set the result, this class can run it internally
 
 /** RunTest - public
 * Description: Runs the _testMethod, collects the results, and then returns
@@ -181,7 +199,7 @@ const TestResult* TestClass::RunTest()
 	catch (std::exception& e) {
 		// record exception data in the errMsg local variable		
 		errMsg = e.what();
-		_testResult.SetStatus(TestResult::Status::FAIL_EXC);
+		_testResult.SetStatus(TestResult::Status::Fail_EXC);
 		_testResult.SetErrorMessage(e.what());
 	}
 
@@ -189,15 +207,17 @@ const TestResult* TestClass::RunTest()
 	_testResult.SetEndTime(timing::now());
 
 	// Set result and error message data
-	if (_testResult.GetStatus() != TestResult::Status::FAIL_EXC) {
+	if (_testResult.GetStatus() != TestResult::Status::Fail_EXC) {
 		_testResult.SetStatus(success ? TestResult::Status::PASS : TestResult::Status::FAIL);
 	}
 
 	if (_testResult.GetStatus() == TestResult::Status::FAIL) {
-		_testResult.SetErrorMessage(_errorMessage); // use error message specified at construction
+		_testResult.SetErrorMessage(_errorMessage); // blank if no errors, exception data otherwise
 	}
 
-	// Return a constant pointer to the result
+	
+	_testResult.SetClassObject();
+	// Return a constant pointer to the result 
 	return &_testResult;
 }
 
