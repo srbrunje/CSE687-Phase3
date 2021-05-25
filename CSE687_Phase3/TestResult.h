@@ -17,7 +17,7 @@
 
 #include <string>
 #include "utils.h"		// common utility functions and constants
-
+#include <json/json.h>
 
 /* Class: TestResult
 * Contains basic data describing the result of the test to include pass/fail status,
@@ -39,6 +39,8 @@ private:
 	timing::hack _startTime;	// the time the test began to execute
 	timing::hack _endTime;		// the time the test finished execution
 	LogLevel     _logLevel;		// the level of logging desired
+	Json::Value data;
+	Json::Value root;
 
 	// Private Member Functions (PMF)
 	// - none for now
@@ -55,8 +57,10 @@ public:
 	void SetStartTime(const timing::hack aStartTime);
 	void SetEndTime(const timing::hack aEndTime);
 	void SetLogLevel(const LogLevel aLogLevel);
+	void SetClassObject();
 
-	// Getters
+		// Getters
+	std::string GetClassObject();
 	std::string GetName() const;
 	Status      GetStatus() const;
 	std::string GetErrorMessage() const;
