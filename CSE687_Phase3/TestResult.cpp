@@ -6,6 +6,8 @@
 * Authors: Steve Brunjes, Zach Demers, Leo Garza
 * Group 6
 *
+* Date: 04-26-2021
+*
 * File: TestResult.cpp
 *
 * Description: Implements a class to handle the
@@ -14,6 +16,8 @@
 ***********************************************/
 
 #include "TestResult.h"
+#include <iostream>
+
 
 
 /** Default Constructor - public
@@ -28,6 +32,55 @@ TestResult::TestResult(const std::string& aName)
 	SetStartTime(timing::now());
 	SetEndTime(timing::now());
 	SetLogLevel(LogLevel::Pass_Fail);
+}
+
+
+/** SetClassObject - public
+ * Description: Sets our JSON object
+ * Parameter 0: none
+ * Return: none
+*/
+
+void TestResult::SetClassObject() {
+
+
+	data["Duration"] = std::to_string(GetDuration());
+
+	data["Status"] = std::to_string(static_cast<int>(GetStatus()));
+
+	data["LogLevel"] = std::to_string(static_cast<int>(GetLogLevel()));
+
+	data["TestName"] = GetName();
+	
+	data["ErrorMessage"] = GetErrorMessage();
+	
+	root = data;
+
+
+	/*
+	"{
+		"Duration": "asdasd",
+		"Status" : "1",
+		"LogLevel" : "1",
+		"TestName: "Yolo",
+		"ErrorMessage": "This is broken"
+	}"
+*/
+
+}
+
+
+/** GetClassObject - public
+ * Description: Converts our JSON object into a string and returns
+ * Parameter 0: a string containing our json object
+ * Return: json_file
+*/
+std::string TestResult::GetClassObject() {
+
+	Json::StreamWriterBuilder builder;
+	std::string json_file = Json::writeString(builder, root);
+	return json_file;
+
 }
 
 /** SetName - public
@@ -147,3 +200,4 @@ LogLevel TestResult::GetLogLevel() const
 {
 	return _logLevel;
 }
+
