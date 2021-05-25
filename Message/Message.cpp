@@ -13,7 +13,7 @@ using SUtils = Utilities::StringHelper;
 
 //----< default constructor results in Message with no attributes >----
 
-Message::Message() {}
+Message::Message() { rawJSON_ = ""; }
 
 //----< constructor accepting dst and src addresses >------------------
 
@@ -21,6 +21,7 @@ Message::Message(EndPoint to, EndPoint from)
 {
   attributes_["to"] = to.toString();
   attributes_["from"] = from.toString();
+  rawJSON_ = "";
 }
 //----< returns reference to Message attributes >----------------------
 
@@ -102,6 +103,16 @@ std::string Message::name()
   }
   return "";
 }
+
+std::string Message::JSON()
+{
+    if (containsKey("JSON"))
+    {
+        return attributes_["JSON"];
+    }
+    return "";
+}
+
 
 //----< set name attribute >-------------------------------------------
 
@@ -187,6 +198,20 @@ std::string Message::toString()
   }
   return temp + "\n";
 }
+
+
+std::string Message::parseToString() {
+
+    std::string temp;
+
+    for (auto keys : attributes_) {
+        if (keys.first == "name") {
+            temp += keys.second;
+        }
+    }
+
+    return temp;
+}
 //----< extracts name from attribute string >--------------------------
 
 Message::Key Message::attribName(const Attribute& attrib)
@@ -218,6 +243,9 @@ Message Message::fromString(const std::string& src)
   }
   return msg;
 }
+
+
+
 //----< displays message on std::ostream >-----------------------------
 /*
 *  - adds beginning newline and removes trailing newline
@@ -297,3 +325,4 @@ int main()
   return 0;
 }
 #endif
+
