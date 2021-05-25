@@ -92,8 +92,12 @@ namespace MsgPassingCommunication
     void to(EndPoint ep);
     EndPoint from();
     void from(EndPoint ep);
+
+
     std::string name();
     void name(const std::string& nm);
+
+
     std::string command();
     void command(const std::string& cmd);
 
@@ -106,13 +110,22 @@ namespace MsgPassingCommunication
     size_t contentLength();
     void contentLength(size_t ln);
     void clear();
+
+    std::string parseToString();
+
     std::string toString();
     static Message fromString(const std::string& src);
+
+
     std::ostream& show(std::ostream& out = std::cout);
+
+
+    std::string JSON();
 
   private:
     Attributes attributes_;
     LogLevel loglevel_;
+    std::string rawJSON_;
 
     // name            : msgName
     // command         : msg Command
