@@ -98,34 +98,20 @@ void TestMSG(TestResult aResult)
 	EndPoint serverEP("localhost", 9893);
 	EndPoint clientEP("localhost", 9892);
 
+	// Create and populate the message
 	Message msg(serverEP, clientEP);
-	std::string rply = aResult.GetName();
+	msg.SetAuthor("Some author of some sort...");
+	msg.SetTimestamp(timing::GetDateStr()); // uses current time as timestamp
+	msg.SetName(aResult.GetName());
+	msg.SetValue("status", (int)aResult.GetStatus());
+	msg.SetValue("errMsg", aResult.GetErrorMessage());
+	msg.SetValue("startTime", timing::GetDateStr(aResult.GetStartTime()));
+	msg.SetValue("endTime", timing::GetDateStr(aResult.GetEndTime()));
+	msg.SetValue("logLevel", (int)aResult.GetLogLevel());
 
-	// set name
-	if (TestResult::Status::PASS == aResult.GetStatus()) {
-		rply += ": Pass";
-	}
-	else if (TestResult::Status::FAIL == aResult.GetStatus()) {
-		rply += ": Fail";
-	}
-	else if (TestResult::Status::FAIL_EXC == aResult.GetStatus()) {
-		rply += ": Fail with exception";
-	}
-	else if (TestResult::Status::NOT_RUN == aResult.GetStatus()) {
-		rply += ": NOT RUN";
-	}
-	else {
-		rply += ": UNKNOWN";
-	}
-
-	double duration = aResult.GetDuration();
-	rply += " " + FormatTimeString(duration);
-	msg.name(rply);
-
-	// set status
+	// send the message
 	comm.postMessage(msg);
 	comm.stop();
-	//::Sleep(200);
 }
 
 /*************************************************************************

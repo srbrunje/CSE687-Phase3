@@ -145,6 +145,7 @@
     <ClCompile Include="ClientHandler.cpp" />
     <ClCompile Include="Comm.cpp" />
     <ClCompile Include="CSE687_Phase3.cpp" />
+    <ClCompile Include="Message.cpp" />
     <ClCompile Include="TestClient.cpp" />
     <ClCompile Include="TestLogger.cpp" />
     <ClCompile Include="TestClass.cpp" />
@@ -155,9 +156,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Cpp11-BlockingQueue\Cpp11-BlockingQueue.vcxproj">
       <Project>{38a1d03d-7747-4f79-9539-358f1d1d8dd7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Message\Message.vcxproj">
-      <Project>{4133d528-ab6d-4ccd-af37-67536f36154c}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Sockets\Sockets.vcxproj">
       <Project>{ca3129b8-1bf4-44c9-b116-53ec72d0bccb}</Project>
@@ -171,6 +169,8 @@
     <ClInclude Include="ClientHandler.h" />
     <ClInclude Include="Comm.h" />
     <ClInclude Include="ExampleTest.h" />
+    <ClInclude Include="json.hpp" />
+    <ClInclude Include="Message.h" />
     <ClInclude Include="TestClient.h" />
     <ClInclude Include="TestLogger.h" />
     <ClInclude Include="TestClass.h" />

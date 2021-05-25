@@ -57,9 +57,11 @@ public:
 	void SetLogLevel(const LogLevel aLogLevel);
 
 	// Getters
-	std::string GetName() const;
-	Status      GetStatus() const;
-	std::string GetErrorMessage() const;
-	double      GetDuration() const;	// returns the time taken to run the test in microseconds
-	LogLevel    GetLogLevel() const;
+	std::string  GetName() const;
+	Status       GetStatus() const;
+	std::string  GetErrorMessage() const;
+	timing::hack GetStartTime() const;
+	timing::hack GetEndTime() const;
+	double       GetDuration() const;	// returns the time taken to run the test in microseconds
+	LogLevel     GetLogLevel() const;
 };

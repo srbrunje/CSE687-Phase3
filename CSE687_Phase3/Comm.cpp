@@ -62,37 +62,31 @@ void Sender::start()
         {
             Message msg = sndQ.deQ();
 
-            if (msg.command() == "quit")
+            if (msg.GetCommand() == "quit")
             {
                 StaticLogger<1>::write("\n  -- send thread shutting down");
                 return;
             }
-            StaticLogger<1>::write("\n  -- " + sndrName + " send thread sending " + msg.name());
-            std::string msgStr = msg.toString();
+            StaticLogger<1>::write("\n  -- " + sndrName + " send thread sending " + msg.GetName());
+            std::string msgStr = msg.GetBodyStr();
+            EndPoint msgTo = msg.GetTo();
 
-            if (msg.to().address != lastEP.address || msg.to().port != lastEP.port)
+            if (msgTo.address != lastEP.address || msgTo.port != lastEP.port)
             {
                 connecter.shutDown();
                 //connecter.close();
-                StaticLogger<1>::write("\n  -- attempting to connect to new endpoint: " + msg.to().toString());
-                if (!connect(msg.to()))
+                StaticLogger<1>::write("\n  -- attempting to connect to new endpoint: " + msgTo.toString());
+                if (!connect(msgTo))
                 {
                     StaticLogger<1>::write("\n can't connect");
                     continue;
                 }
                 else
                 {
-                    StaticLogger<1>::write("\n  connected to " + msg.to().toString());
+                    StaticLogger<1>::write("\n  connected to " + msgTo.toString());
                 }
             }
-            if (msg.containsKey("file"))
-            {
-                sendFile(msg);
-            }
-            else
-            {
-                bool sendRslt = connecter.send(msgStr.length(), (Socket::byte*)msgStr.c_str());
-            }
+            bool sendRslt = connecter.send(msgStr.length(), (Socket::byte*)msgStr.c_str());
         }
     };
     std::thread t(threadProc);
@@ -103,8 +97,8 @@ void Sender::start()
 void Sender::stop()
 {
     Message msg;
-    msg.name("quit");
-    msg.command("quit");
+    msg.SetName("quit");
+    msg.SetCommand("quit");
     postMessage(msg);
     connecter.shutDown();
 }
@@ -120,32 +114,6 @@ bool Sender::connect(EndPoint ep)
 void Sender::postMessage(Message msg)
 {
     sndQ.enQ(msg);
-}
-//----< sends binary file >------------------------------------------
-/*
-*  - not implemented yet
-*/
-bool Sender::sendFile(Message msg)
-{
-    if (!msg.containsKey("file"))
-        return false;
-    std::string fileSpec = sendFilePath + "/" + msg.file();
-    std::ifstream sendFile(fileSpec, std::ios::binary);
-    if (!sendFile.good())
-        return false;
-    while (true)
-    {
-        sendFile.read(rwBuffer, BlockSize);
-        size_t blockSize = (size_t)sendFile.gcount();
-        msg.contentLength(blockSize);
-        std::string msgString = msg.toString();
-        connecter.sendString(msgString);
-        if (blockSize == 0)
-            break;
-        connecter.send(blockSize, rwBuffer);
-    }
-    sendFile.close();
-    return true;
 }
 
 

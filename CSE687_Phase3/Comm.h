@@ -31,7 +31,7 @@
 *  - first release
 */
 
-#include "../Message/Message.h"
+#include "Message.h"
 #include "../Cpp11-BlockingQueue/Cpp11-BlockingQueue.h"
 #include "../Sockets/Sockets.h"
 #include <string>

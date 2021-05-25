@@ -46,27 +46,19 @@ void ProcessReplies()
     comm.start();
 
     Message msg, rply;
-    rply.name("reply");
+    rply.SetName("reply");
     size_t count = 0;
     while (true)
     {
         // display each incoming message
 
         msg = comm.getMessage();
-        std::cout << "\n  " + comm.name() + " received Test Status: " << msg.name();
+        std::cout << "\n  " + comm.name() + " received Test Status: " << msg.GetName()
+            << "\n" << msg.GetBodyStr() << "\n";
 
-        if (msg.containsKey("file"))  // is this a file message?
+        if (msg.GetCommand() == "stop")
         {
-            if (msg.contentLength() == 0)
-                std::cout << "\n  " + comm.name() + " received file \"" + msg.file() + "\" from " + msg.name();
-        }
-        else  // non-file message
-        {          
-
-            if (msg.command() == "stop")
-            {
-                break;
-            }
+            break;
         }
     }
 
@@ -86,16 +78,12 @@ void startTest(std::string testName, LogLevel logLevel)
 
     // create the message
     Message testRequest(serverEP, clientEP);
-    testRequest.name(testName); //the name of the test to run
+    testRequest.SetName(testName);
+    testRequest.SetValue("logLevel",(int)logLevel);
     
-    //the log level
-    testRequest.logLevel(logLevel);
-
-    //set status
+    // send the message
     comm.postMessage(testRequest);
-
     comm.stop();
-
 }
 
 void stopTest()
@@ -108,14 +96,11 @@ void stopTest()
 
     // create the message
     Message testRequest(serverEP, clientEP);
-    testRequest.name("stop"); //the name of the test to run
+    testRequest.SetName("stop"); //the name of the test to run
+    testRequest.SetCommand("stop");
 
-    //the log level
-    testRequest.command("stop");
-
-    //set status
+    // send the message
     comm.postMessage(testRequest);
-
     comm.stop();
 }
 

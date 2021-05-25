@@ -28,20 +28,11 @@
 #include <sstream>      // for std::stringstream in DblToStr()
 #include <iomanip>      // for std::fixed and std::setpricision in DblToStr()
 
-// Set of shorthands for timing purposes
-namespace timing {
 
-	typedef std::chrono::high_resolution_clock clock;
-	typedef clock::time_point                  hack;
 
-	static hack now() {
-		return clock::now();
-	}
 
-	static double duration_us(hack aStartTime, hack aEndTime = now()) {
-		return std::chrono::duration<double, std::micro>(aEndTime - aStartTime).count();
-	}
-}
+typedef unsigned long long ull;
+
 
 // Enum class to define the level of logging
 enum class LogLevel
@@ -49,7 +40,8 @@ enum class LogLevel
 	Pass_Fail,
 	Pass_Fail_with_error_message,
 	Pass_Fail_with_test_duration,
-	Pass_Fail_with_error_message_and_test_duration
+	Pass_Fail_with_error_message_and_test_duration,
+	INVALID
 };
 
 
@@ -90,6 +82,75 @@ static std::string DblToStr(const double aVal,
 	return str;
 }
 
+
+/** IntToStr - public
+* Description: Converts an integer into a string with a minimum number of places (prepends with 0's)
+* Parameter 0: the int value to convert to a string
+* Parameter 1: the minimum number of places (default=2)
+* Return: the integer value in std::string form with zeros prepending the value if needed to fill the space
+*/
+static std::string IntToStr(int aInt, const int aMinPlaces = 2)
+{
+	std::string minus = "";
+	if (aInt < 0) {
+		minus = "-";
+		aInt *= -1;
+	}
+	std::ostringstream ss;
+	ss << std::setfill('0') << std::setw(aMinPlaces) << aInt;
+	return minus + ss.str();
+}
+
+
+// Set of shorthands for timing purposes
+namespace timing {
+
+	typedef std::chrono::system_clock clock;
+	typedef clock::time_point         hack;
+
+	static hack now() {
+		return clock::now();
+	}
+
+	static double duration_us(hack aStartTime, hack aEndTime = now()) {
+		return std::chrono::duration<double, std::micro>(aEndTime - aStartTime).count();
+	}
+
+	static std::string toString(hack aHack)
+	{
+		clock::duration t = aHack.time_since_epoch();
+		ull dur = t.count();
+		return std::to_string(dur);
+	}
+
+	static hack fromULL(ull ticks)
+	{
+		clock::duration tmp(ticks);
+		hack tp(tmp);
+		return tp;
+	}
+	static hack fromULLStr(const std::string& ticks)
+	{
+		ull st = std::stoull(ticks, 0, 0);
+		timing::hack tp = timing::fromULL(st);
+		return tp;
+	}
+
+
+	static std::string GetDateStr(hack aTime = now())
+	{
+		std::time_t ttNow = std::chrono::system_clock::to_time_t(aTime);
+		std::tm     tmNow;
+		localtime_s(&tmNow, &ttNow);
+		std::string str = IntToStr(tmNow.tm_year + 1900) + "-"
+			+ IntToStr(tmNow.tm_mon + 1) + "-"
+			+ IntToStr(tmNow.tm_mday) + "|"
+			+ IntToStr(tmNow.tm_hour) + ":"
+			+ IntToStr(tmNow.tm_min) + ":"
+			+ IntToStr(tmNow.tm_sec);
+		return str;
+	}
+}
 
 
 /** FormatTimeString - public

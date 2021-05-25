@@ -7,11 +7,13 @@
 #include <algorithm>
 #include <conio.h>
 
+using namespace MsgPassingCommunication;
+
 TestServer::TestServer()
 {
 
     std::cout << "create test server class\n";
-    bool shutdown = false;
+    shutdown = false;
 
     //create the tests
     mgr = TestManager::GetInstance();
@@ -75,17 +77,17 @@ void ListenerThread(TestManager* mgr)
     comm.start();
 
     Message msg, rply;
-    rply.name("reply");
+    rply.SetName("reply");
     size_t count = 0;
     while (true)
     {
         // display each incoming message
 
         msg = comm.getMessage();
-        std::cout << "\n  " + comm.name() + " received Test Request: " << msg.name();
+        std::cout << "\n  " + comm.name() + " received Test Request: " << msg.GetName();
 
         //get the test number
-        int testNumber = mgr->FindTestNumber(msg.name());
+        int testNumber = mgr->FindTestNumber(msg.GetName());
 
         if (testNumber >= 0)
         {
@@ -104,7 +106,7 @@ void ListenerThread(TestManager* mgr)
 
         }
 
-        if (msg.command() == "stop")
+        if (msg.GetCommand() == "stop")
         {
             break;
         }

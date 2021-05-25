@@ -124,6 +124,26 @@ std::string TestResult::GetErrorMessage() const
 	return _errorMessage;
 }
 
+/** GetStartTime - public
+ * Description: Returns the _startTime timing::hack PMV
+ * Parameters: none
+ * Return: timing::hack (aka std::chrono::system_clock::time_point)
+*/
+timing::hack TestResult::GetStartTime() const
+{
+	return _startTime;
+}
+
+/** GetEndTime - public
+ * Description: Returns the _endTime timing::hack PMV
+ * Parameters: none
+ * Return: timing::hack (aka std::chrono::system_clock::time_point)
+*/
+timing::hack TestResult::GetEndTime() const
+{
+	return _endTime;
+}
+
 /** GetDuration - public
  * Description: Returns the time it took to completely execute the test
  *    in milliseconds, or -1.0 if the test has not completed yet.
