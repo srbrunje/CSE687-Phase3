@@ -20,11 +20,13 @@
 #include "ExampleTest.h"
 #include "ClientHandler.h"
 #include "TestServer.h"
+#include <json/json.h>
+
 
 using namespace MsgPassingCommunication;
 using namespace Sockets;
 using SUtils = Utilities::StringHelper;
-
+void DisplayJsonData(Json::Value);
 
 
 //----< constructor sets port >--------------------------------------
@@ -34,10 +36,44 @@ using SUtils = Utilities::StringHelper;
 Cosmetic cosmetic;
 
 
+Json::Value RetunParseData(std::string str) {
+
+	const auto rawJsonLength = static_cast<int>(str.length());
+
+	JSONCPP_STRING err;
+	Json::Value root;
+
+	Json::CharReaderBuilder builder;
+	    const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+	    if (!reader->parse(str.c_str(), str.c_str() + rawJsonLength, &root,
+	        &err)) {
+	        std::cout << "error" << std::endl;
+	        return EXIT_FAILURE;
+	    }
+
+	return root;
+}
+
+void DisplayJsonData(Json::Value root) {
+
+    try {
+        std::cout << "======================================" << std::endl;
+        std::cout << "ErrorMessage: " << root["ErrorMessage"].asString() << std::endl;
+        std::cout << "TestName: " << root["TestName"].asString() << std::endl;
+        std::cout << "LogLevel: " << root["LogLevel"].asString() << std::endl;
+        std::cout << "Status: " << root["Status"].asString() << std::endl;
+        std::cout << "Duration: " << root["Duration"].asString() << std::endl;
+        std::cout << "======================================" << std::endl;
+    }
+    catch (...) {
+        std::cout << "An error has occured\n";
+    }
+}
 
 //the reply process thread
 void ProcessReplies()
 {
+    
     EndPoint serverEP("localhost", 9893);
   //  SocketSystem ss;
 
@@ -53,21 +89,21 @@ void ProcessReplies()
         // display each incoming message
 
         msg = comm.getMessage();
-        std::cout << "\n  " + comm.name() + " received Test Status: " << msg.name();
+        //std::string MessageU = msg.toString();
+        //std::cout << "\nMsg: " << MessageU << std::endl;
 
-        if (msg.containsKey("file"))  // is this a file message?
+        Json::Value root = RetunParseData(msg.JSON()); // Getting our JSON data parsed
+
+        std::cout << "\n\nRaw: " << msg.JSON() << std::endl; // Displaying our raw json
+
+        DisplayJsonData(root); // Display Our Parse JSON
+
+    
+        if (msg.command() == "stop")
         {
-            if (msg.contentLength() == 0)
-                std::cout << "\n  " + comm.name() + " received file \"" + msg.file() + "\" from " + msg.name();
+            break;
         }
-        else  // non-file message
-        {          
-
-            if (msg.command() == "stop")
-            {
-                break;
-            }
-        }
+        
     }
 
     comm.stop();
@@ -144,25 +180,27 @@ int main()
     reply.detach();
 
     //request a test
-    startTest("LongRun4", LogLevel::Pass_Fail);
-    startTest("LongRun3", LogLevel::Pass_Fail);
-    startTest("LongRun2", LogLevel::Pass_Fail);
-    startTest("LongRun1", LogLevel::Pass_Fail);
+    //startTest("LongRun4", LogLevel::Pass_Fail);
+    //startTest("LongRun3", LogLevel::Pass_Fail);
+    //startTest("LongRun2", LogLevel::Pass_Fail);
+    //startTest("LongRun1", LogLevel::Pass_Fail);
+    startTest("Add: 4+0=4", LogLevel::Pass_Fail);
+    //startTest("Mul: 4*0=4", LogLevel::Pass_Fail);
+    //startTest("LongRun4", LogLevel::Pass_Fail);
     startTest("Add: 4+0=4", LogLevel::Pass_Fail);
     startTest("Mul: 4*0=4", LogLevel::Pass_Fail);
-    startTest("LongRun4", LogLevel::Pass_Fail);
-    startTest("Add: 4+0=4", LogLevel::Pass_Fail);
-    startTest("Mul: 4*0=4", LogLevel::Pass_Fail);
-    startTest("Add: 4+0=4", LogLevel::Pass_Fail);
+    //startTest("Add: 4+0=4", LogLevel::Pass_Fail);
     startTest("Mul: 4*0=4", LogLevel::Pass_Fail);
 
     stopTest();
 
     StaticLogger<1>::flush();
+
     std::cout << "\n  press enter to quit test Harness";
     _getche();
 
     
     return 0;
 }
+
 
