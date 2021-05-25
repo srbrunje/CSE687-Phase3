@@ -14,7 +14,7 @@ TestServer::TestServer()
     bool shutdown = false;
 
     //create the tests
-    mgr = TestManager::GetInstance();
+    mgr = TestManager::getInstance();
 }
 
 
@@ -53,7 +53,7 @@ void TestServer::InitilizeTestServer()
 
 bool runTest(TestManager* mgr, int testNumber)
 {
-    mgr->RunTest(testNumber);
+    mgr->runTest(testNumber);
     return true;
 }
 
@@ -93,7 +93,7 @@ void ListenerThread(TestManager* mgr)
            
 
            //run the test
-            ThreadPool<4>::CallObj t = [mgr,testNumber]() ->bool { mgr->RunTest(testNumber); return true; };
+            ThreadPool<4>::CallObj t = [mgr,testNumber]() ->bool { mgr->runTest(testNumber); return true; };
             trpl.workItem(t);
 
 

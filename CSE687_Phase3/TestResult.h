@@ -59,7 +59,7 @@ public:
 	void SetLogLevel(const LogLevel aLogLevel);
 	void SetClassObject();
 
-		// Getters
+	// Getters
 	std::string GetClassObject();
 	std::string GetName() const;
 	Status      GetStatus() const;

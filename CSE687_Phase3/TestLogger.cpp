@@ -1,26 +1,14 @@
-/***********************************************
-* CSE678 Object Oriented Design
-*
-* Spring 2021
-*
-* Authors: Steve Brunjes, Zach Demers, Leo Garza
-* Group 6
-*
-* File: TestLogger.h
-*
-* Description: Implements a class that is used
-*              for logging output to a file
-*              and/or a stream.
-*
-***********************************************/
+/*******************************************************************
+* TODO: Remember to insert a file header eventually
+*******************************************************************/
 
-#include "TestLogger.h"		// TestLogger class declarations
+#include "TestLogger.h"
 #include <iostream>		// std::cout
 #include <fstream>		// std::ofstream
 
 
 /** Default Constructor - public
-* Description: Constructs a TestLogger with given settings.  If left to defaults, it will
+* Description: Constructs a Logger with given settings.  If left to defaults, it will
 *    only output to the default std::ostream.  If a path to an output file is given,
 *    it will output to that path and will only output to the stream if bOutputToStream
 *    is set to true.
@@ -31,7 +19,6 @@
 TestLogger::TestLogger(const std::string& aPathToOutputFile,
 	const bool bOutputToStream)
 {
-	_outputStream = &std::cout; // default to std::cout until specified otherwise
 	if (aPathToOutputFile.empty()) {
 		// Default behavior
 		SetOutputToFile(false);
@@ -64,11 +51,6 @@ void TestLogger::SetOutputToFile(const bool bOutputToFile)
 void TestLogger::SetOutputToStream(const bool bOutputToStream)
 {
 	_outputToStream = bOutputToStream;
-
-	// If attempting to output to a stream with a bad _outputStream, default to std::cout
-	if (_outputToStream && (_outputStream == nullptr || !_outputStream->good())) {
-		_outputStream = &std::cout;
-	}
 }
 
 /** SetOutputFile - public
@@ -100,11 +82,11 @@ bool TestLogger::SetOutputFile(const std::string& aPathToFile)
  * Parameter 0: an ostream where output is desired to be logged
  * Return: nothing
 */
-void TestLogger::SetOutputStream(std::ostream& aOutputStream)
-{
-	_outputStream = &aOutputStream;          // set the stream value
-	_outputToStream = _outputStream->good(); // will output if stream does not contain error bits
-}
+//void Logger::SetOutputStream(std::ostream& aOutputStream)
+//{
+//	_outputStream = &aOutputStream;          // set the stream value
+//	_outputToStream = _outputStream->good(); // will output if stream does not contain error bits
+//}
 
 
 
@@ -145,10 +127,10 @@ std::string TestLogger::GetOutputFile() const
  * Parameters: none
  * Return: ostream pointer (_outputStream PMV)
 */
-std::ostream* TestLogger::GetOutputStream() const
-{
-	return _outputStream;
-}
+//std::ostream Logger::GetOutputStream() const
+//{
+//	return _outputStream;
+//}
 
 
 
@@ -166,9 +148,7 @@ void TestLogger::LogResult(const TestResult& aTestResult)
 	if (status == TestResult::Status::PASS) {
 		msg += "Pass/Fail: PASS\n";
 	}
-	else if (status == TestResult::Status::FAIL
-		|| status == TestResult::Status::FAIL_EXC)
-	{
+	else if (status == TestResult::Status::FAIL) {
 		msg += "Pass/Fail: FAIL\n";
 	}
 	else { //if (status == TestResult::Status::NOT_RUN)
@@ -183,21 +163,32 @@ void TestLogger::LogResult(const TestResult& aTestResult)
 	if (ll == LogLevel::Pass_Fail_with_error_message
 		|| ll == LogLevel::Pass_Fail_with_error_message_and_test_duration)
 	{
-		// Record the error messages from the TestResult
-		msg += "Errors: " + aTestResult.GetErrorMessage() + '\n';
+		//// Record the error messages from the TestResult
+		//if (aTestResult.GetErrorMessage() != "" || !aTestResult.GetErrorMessage().empty()) {
+		//	msg += "Errors: " + aTestResult.GetErrorMessage() + '\n';
+		//}
+		//else {
+		//	msg += "Error: Test result was incorrect!\n";
+		//}
+
+		msg += "Error: " + aTestResult.GetErrorMessage() + "\n";
 	}
 	if (ll == LogLevel::Pass_Fail_with_test_duration
 		|| ll == LogLevel::Pass_Fail_with_error_message_and_test_duration)
 	{
 		// Record the timing data from the TestResult		
 		msg += "Timing: " + FormatTimeString(aTestResult.GetDuration()) + "\n";
+		
 	}
-	msg += '\n'; // append one final new line for clarity
 
 	// Call LogMessage() with the result's output as the message to maintain one
 	// means of outputting rather than duplicating code
+	msg += '\n';
 	LogMessage(msg);
 }
+
+
+
 
 /** LogMessage - public
  * Description: Logs a given message to the appropriate logging outputs
@@ -222,7 +213,10 @@ void TestLogger::LogMessage(const std::string& aMessage)
 
 	if (_outputToStream) {
 		// Outputting to stream
-		(*_outputStream) << aMessage;
+
+		// TODO: make _outputStream customizable - haven't figured that out yet
+
+		std::cout << aMessage;
 	}
 }
 
@@ -236,9 +230,8 @@ void TestLogger::ClearContents()
 {
 	// Ensure the output file exists
 	if (std::filesystem::exists(_outputFile)) {
-		std::ofstream ofs;     // open a file stream
+		std::ofstream ofs;
 		ofs.open(_outputFile); // opens file and overwrites contents
 		ofs.close();           // closes file
-		// Since no new contents were added, the file is now blank
 	}
 }

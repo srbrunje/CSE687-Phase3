@@ -58,7 +58,7 @@ TestManager::TestManager()
 	_numPass = 0;
 	_numFail = 0;
 	_numExc = 0;
-	_timeElapsed = 0.0;	
+	_timeElapsed = 0.0;
 }
 
 
@@ -96,9 +96,9 @@ void TestMSG(TestResult status)
 
 	EndPoint serverEP("localhost", 9893);
 	EndPoint clientEP("localhost", 9892);
-	
+
 	Message msg(serverEP, clientEP);
-			
+
 	std::string classObject = removeNewLine(status.GetClassObject()); // getting our JSON Data and removes new lines found inside JSON OBJECT
 
 	msg.attribute("JSON", classObject); // adding JSON attritubute 
@@ -107,7 +107,7 @@ void TestMSG(TestResult status)
 	comm.postMessage(msg); // posting message
 
 	comm.stop();
-		
+
 }
 
 
@@ -144,20 +144,20 @@ bool TestManager::ExecuteTests()
 	//loop through and execute each test
 	for (int i = 0; i < _tests.size(); i++)
 	{
-		
+
 		const TestResult* result = _tests[i].RunTest();
 
 		//create the message reply and send
 		TestResult r = *result;
 
-	//	std::thread r1(TestMSG);
-	//	r1.join();
+		//	std::thread r1(TestMSG);
+		//	r1.join();
 		TestMSG(r);
 
 		if (result->GetStatus() == TestResult::Status::PASS) {
 			_numPass++;
 		}
-		else if (result->GetStatus() == TestResult::Status::Fail_EXC) {
+		else if (result->GetStatus() == TestResult::Status::FAIL_EXC) {
 			_numExc++;
 			_numFail++;
 		}
@@ -289,4 +289,3 @@ int TestManager::FindTestNumber(std::string name)
 
 	return rtn;
 }
-

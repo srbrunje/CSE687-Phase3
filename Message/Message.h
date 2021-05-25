@@ -7,7 +7,7 @@
 /*
 *  Package Operations:
 *  -------------------
-*  This package defines an EndPoint struct and a Message class.  
+*  This package defines an EndPoint struct and a Message class.
 *  - Endpoints define a message source or destination with an address and port number.
 *  - Messages have an HTTP style structure with a set of attribute lines containing
 *    name:value pairs.
@@ -32,107 +32,107 @@
 
 namespace MsgPassingCommunication
 {
-  ///////////////////////////////////////////////////////////////////
-  // EndPoint struct
+    ///////////////////////////////////////////////////////////////////
+    // EndPoint struct
 
-  struct EndPoint
-  {
-    using Address = std::string;
-    using Port = size_t;
-    Address address;
-    Port port;
-    EndPoint(Address anAddress = "", Port aPort = 0);
-    std::string toString();
-    static EndPoint fromString(const std::string& str);
-  };
+    struct EndPoint
+    {
+        using Address = std::string;
+        using Port = size_t;
+        Address address;
+        Port port;
+        EndPoint(Address anAddress = "", Port aPort = 0);
+        std::string toString();
+        static EndPoint fromString(const std::string& str);
+    };
 
-  inline EndPoint::EndPoint(Address anAddress, Port aPort) : address(anAddress), port(aPort) {}
+    inline EndPoint::EndPoint(Address anAddress, Port aPort) : address(anAddress), port(aPort) {}
 
-  inline std::string EndPoint::toString()
-  {
-    return address + ":" + Utilities::Converter<size_t>::toString(port);
-  }
+    inline std::string EndPoint::toString()
+    {
+        return address + ":" + Utilities::Converter<size_t>::toString(port);
+    }
 
-  inline EndPoint EndPoint::fromString(const std::string& str)
-  {
-    EndPoint ep;
-    size_t pos = str.find_first_of(':');
-    if (pos == str.length())
-      return ep;
-    ep.address = str.substr(0, pos);
-    std::string portStr = str.substr(pos + 1);
-    ep.port = Utilities::Converter<size_t>::toValue(portStr);
-    return ep;
-  }
-  ///////////////////////////////////////////////////////////////////
-  // Message class
-  // - follows the style, but not the implementation details of
-  //   HTTP messages
+    inline EndPoint EndPoint::fromString(const std::string& str)
+    {
+        EndPoint ep;
+        size_t pos = str.find_first_of(':');
+        if (pos == str.length())
+            return ep;
+        ep.address = str.substr(0, pos);
+        std::string portStr = str.substr(pos + 1);
+        ep.port = Utilities::Converter<size_t>::toValue(portStr);
+        return ep;
+    }
+    ///////////////////////////////////////////////////////////////////
+    // Message class
+    // - follows the style, but not the implementation details of
+    //   HTTP messages
 
-  class Message
-  {
-  public:
-    using Key = std::string;
-    using Value = std::string;
-    using Attribute = std::string;
-    using Attributes = std::unordered_map<Key, Value>;
-    using Keys = std::vector<Key>;
+    class Message
+    {
+    public:
+        using Key = std::string;
+        using Value = std::string;
+        using Attribute = std::string;
+        using Attributes = std::unordered_map<Key, Value>;
+        using Keys = std::vector<Key>;
 
-    Message();
-    Message(EndPoint to, EndPoint from);
+        Message();
+        Message(EndPoint to, EndPoint from);
 
-    Attributes& attributes();
-    void attribute(const Key& key, const Value& value);
-    Keys keys();
-    static Key attribName(const Attribute& attr);
-    static Value attribValue(const Attribute& attr);
-    bool containsKey(const Key& key);
+        Attributes& attributes();
+        void attribute(const Key& key, const Value& value);
+        Keys keys();
+        static Key attribName(const Attribute& attr);
+        static Value attribValue(const Attribute& attr);
+        bool containsKey(const Key& key);
 
-    EndPoint to();
-    void to(EndPoint ep);
-    EndPoint from();
-    void from(EndPoint ep);
-
-
-    std::string name();
-    void name(const std::string& nm);
+        EndPoint to();
+        void to(EndPoint ep);
+        EndPoint from();
+        void from(EndPoint ep);
 
 
-    std::string command();
-    void command(const std::string& cmd);
-
-    LogLevel logLevel();
-    void logLevel(const LogLevel& ll);
-    
-
-    std::string file();
-    void file(const std::string& fl);
-    size_t contentLength();
-    void contentLength(size_t ln);
-    void clear();
-
-    std::string parseToString();
-
-    std::string toString();
-    static Message fromString(const std::string& src);
+        std::string name();
+        void name(const std::string& nm);
 
 
-    std::ostream& show(std::ostream& out = std::cout);
+        std::string command();
+        void command(const std::string& cmd);
+
+        LogLevel logLevel();
+        void logLevel(const LogLevel& ll);
 
 
-    std::string JSON();
+        std::string file();
+        void file(const std::string& fl);
+        size_t contentLength();
+        void contentLength(size_t ln);
+        void clear();
 
-  private:
-    Attributes attributes_;
-    LogLevel loglevel_;
-    std::string rawJSON_;
+        std::string parseToString();
 
-    // name            : msgName
-    // command         : msg Command
-    // to              : dst EndPoint
-    // from            : src EndPoint
-    // file            : file name
-    // content-length  : body length in bytes
-    // custom attributes
-  };
+        std::string toString();
+        static Message fromString(const std::string& src);
+
+
+        std::ostream& show(std::ostream& out = std::cout);
+
+
+        std::string JSON();
+
+    private:
+        Attributes attributes_;
+        LogLevel loglevel_;
+        std::string rawJSON_;
+
+        // name            : msgName
+        // command         : msg Command
+        // to              : dst EndPoint
+        // from            : src EndPoint
+        // file            : file name
+        // content-length  : body length in bytes
+        // custom attributes
+    };
 }

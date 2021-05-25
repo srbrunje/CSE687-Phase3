@@ -51,9 +51,9 @@ void TestResult::SetClassObject() {
 	data["LogLevel"] = std::to_string(static_cast<int>(GetLogLevel()));
 
 	data["TestName"] = GetName();
-	
+
 	data["ErrorMessage"] = GetErrorMessage();
-	
+
 	root = data;
 
 
@@ -200,4 +200,3 @@ LogLevel TestResult::GetLogLevel() const
 {
 	return _logLevel;
 }
-

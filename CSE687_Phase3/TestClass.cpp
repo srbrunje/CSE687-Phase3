@@ -199,7 +199,7 @@ const TestResult* TestClass::RunTest()
 	catch (std::exception& e) {
 		// record exception data in the errMsg local variable		
 		errMsg = e.what();
-		_testResult.SetStatus(TestResult::Status::Fail_EXC);
+		_testResult.SetStatus(TestResult::Status::FAIL_EXC);
 		_testResult.SetErrorMessage(e.what());
 	}
 
@@ -207,7 +207,7 @@ const TestResult* TestClass::RunTest()
 	_testResult.SetEndTime(timing::now());
 
 	// Set result and error message data
-	if (_testResult.GetStatus() != TestResult::Status::Fail_EXC) {
+	if (_testResult.GetStatus() != TestResult::Status::FAIL_EXC) {
 		_testResult.SetStatus(success ? TestResult::Status::PASS : TestResult::Status::FAIL);
 	}
 
@@ -217,7 +217,7 @@ const TestResult* TestClass::RunTest()
 
 	
 	_testResult.SetClassObject();
-	// Return a constant pointer to the result 
+	// Return a constant pointer to the result
 	return &_testResult;
 }
 

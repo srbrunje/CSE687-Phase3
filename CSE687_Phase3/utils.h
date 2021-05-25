@@ -93,7 +93,7 @@ static std::string FormatTimeString(double dDurration)
 */
 static std::string removeNewLine(std::string str) {
 
-	std::string newString{""};
+	std::string newString{ "" };
 
 	for (int x = 0; x < str.length(); x++)
 		if (str[x] != '\n') newString += str[x];

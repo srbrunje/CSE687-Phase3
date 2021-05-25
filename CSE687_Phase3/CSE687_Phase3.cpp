@@ -38,20 +38,20 @@ Cosmetic cosmetic;
 
 Json::Value RetunParseData(std::string str) {
 
-	const auto rawJsonLength = static_cast<int>(str.length());
+    const auto rawJsonLength = static_cast<int>(str.length());
 
-	JSONCPP_STRING err;
-	Json::Value root;
+    JSONCPP_STRING err;
+    Json::Value root;
 
-	Json::CharReaderBuilder builder;
-	    const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-	    if (!reader->parse(str.c_str(), str.c_str() + rawJsonLength, &root,
-	        &err)) {
-	        std::cout << "error" << std::endl;
-	        return EXIT_FAILURE;
-	    }
+    Json::CharReaderBuilder builder;
+    const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+    if (!reader->parse(str.c_str(), str.c_str() + rawJsonLength, &root,
+        &err)) {
+        std::cout << "error" << std::endl;
+        return EXIT_FAILURE;
+    }
 
-	return root;
+    return root;
 }
 
 void DisplayJsonData(Json::Value root) {
@@ -73,9 +73,9 @@ void DisplayJsonData(Json::Value root) {
 //the reply process thread
 void ProcessReplies()
 {
-    
+
     EndPoint serverEP("localhost", 9893);
-  //  SocketSystem ss;
+    //  SocketSystem ss;
 
     Comm comm(serverEP, "Client Status");
 
@@ -98,12 +98,12 @@ void ProcessReplies()
 
         DisplayJsonData(root); // Display Our Parse JSON
 
-    
+
         if (msg.command() == "stop")
         {
             break;
         }
-        
+
     }
 
     comm.stop();
@@ -123,7 +123,7 @@ void startTest(std::string testName, LogLevel logLevel)
     // create the message
     Message testRequest(serverEP, clientEP);
     testRequest.name(testName); //the name of the test to run
-    
+
     //the log level
     testRequest.logLevel(logLevel);
 
@@ -172,8 +172,8 @@ int main()
 
     //start the server
     TestServer testServer = TestServer();
-    testServer.StartServer();   
-    
+    testServer.StartServer();
+
 
     //start the reply socket
     std::thread reply(ProcessReplies);
@@ -199,8 +199,6 @@ int main()
     std::cout << "\n  press enter to quit test Harness";
     _getche();
 
-    
+
     return 0;
 }
-
-
