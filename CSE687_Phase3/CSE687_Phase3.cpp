@@ -25,85 +25,6 @@ using namespace MsgPassingCommunication;
 using namespace Sockets;
 using SUtils = Utilities::StringHelper;
 
-
-
-//----< constructor sets port >--------------------------------------
-
-
-
-Cosmetic cosmetic;
-
-
-
-//the reply process thread
-void ProcessReplies()
-{
-    EndPoint serverEP("localhost", 9893);
-  //  SocketSystem ss;
-
-    Comm comm(serverEP, "Client Status");
-
-    comm.start();
-
-    Message msg, rply;
-    rply.SetName("reply");
-    size_t count = 0;
-    while (true)
-    {
-        // display each incoming message
-
-        msg = comm.getMessage();
-        std::cout << "\n  " + comm.name() + " received Test Status: " << msg.GetName()
-            << "\n" << msg.GetBodyStr() << "\n";
-
-        if (msg.GetCommand() == "stop")
-        {
-            break;
-        }
-    }
-
-    comm.stop();
-}
-
-
-
-
-void startTest(std::string testName, LogLevel logLevel)
-{
-    //create the comm connection
-    Comm comm(EndPoint("localhost", 9891), "Send Test Request");
-    comm.start();
-    EndPoint serverEP("localhost", 9890);
-    EndPoint clientEP("localhost", 9891);
-
-    // create the message
-    Message testRequest(serverEP, clientEP);
-    testRequest.SetName(testName);
-    testRequest.SetValue("logLevel",(int)logLevel);
-    
-    // send the message
-    comm.postMessage(testRequest);
-    comm.stop();
-}
-
-void stopTest()
-{
-    //create the comm connection
-    Comm comm(EndPoint("localhost", 9891), "Send Test Request");
-    comm.start();
-    EndPoint serverEP("localhost", 9890);
-    EndPoint clientEP("localhost", 9891);
-
-    // create the message
-    Message testRequest(serverEP, clientEP);
-    testRequest.SetName("stop"); //the name of the test to run
-    testRequest.SetCommand("stop");
-
-    // send the message
-    comm.postMessage(testRequest);
-    comm.stop();
-}
-
 int main()
 {
     SocketSystem ss;
@@ -114,34 +35,35 @@ int main()
 
     StaticLogger<1>::attach(&std::cout);
 
-    ///////////////////////////////////////////////////////////////////
-    // remove comment on line below to show many of the gory details
-    //
-   // StaticLogger<1>::start();
+
+    // Remove comment below to show extra details
+    //StaticLogger<1>::start();
 
     //start the server
     TestServer testServer = TestServer();
     testServer.StartServer();   
-    
+    testServer.SetOutputFile("_output.txt");
 
     //start the reply socket
-    std::thread reply(ProcessReplies);
+    std::thread reply(&TestServer::ProcessReplies, &testServer);
     reply.detach();
 
     //request a test
-    startTest("LongRun4", LogLevel::Pass_Fail);
-    startTest("LongRun3", LogLevel::Pass_Fail);
-    startTest("LongRun2", LogLevel::Pass_Fail);
-    startTest("LongRun1", LogLevel::Pass_Fail);
-    startTest("Add: 4+0=4", LogLevel::Pass_Fail);
-    startTest("Mul: 4*0=4", LogLevel::Pass_Fail);
-    startTest("LongRun4", LogLevel::Pass_Fail);
-    startTest("Add: 4+0=4", LogLevel::Pass_Fail);
-    startTest("Mul: 4*0=4", LogLevel::Pass_Fail);
-    startTest("Add: 4+0=4", LogLevel::Pass_Fail);
-    startTest("Mul: 4*0=4", LogLevel::Pass_Fail);
+    testServer.StartTest("LongRun4", LogLevel::Pass_Fail);
+    testServer.StartTest("LongRun3", LogLevel::Pass_Fail_with_error_message);
+    testServer.StartTest("LongRun2", LogLevel::Pass_Fail_with_test_duration);
+    testServer.StartTest("LongRun1", LogLevel::Pass_Fail_with_error_message_and_test_duration);
+    testServer.StartTest("Add: 4+0=4", LogLevel::Pass_Fail_with_error_message);
+    testServer.StartTest("Mul: 4*0=4", LogLevel::Pass_Fail_with_test_duration);
+    testServer.StartTest("Div: 4/0=4", LogLevel::Pass_Fail_with_error_message_and_test_duration);
+    testServer.StartTest("LongRun4", LogLevel::Pass_Fail_with_error_message_and_test_duration);
+    testServer.StartTest("Add: 4+0=4", LogLevel::Pass_Fail_with_error_message);
+    testServer.StartTest("Mul: 4*0=4", LogLevel::Pass_Fail_with_test_duration);
+    testServer.StartTest("Sub: 4-0=4", LogLevel::Pass_Fail);
+    testServer.StartTest("Div: 4/0=4", LogLevel::Pass_Fail);
+    testServer.StopTest();
 
-    stopTest();
+    testServer.ReportResults();
 
     StaticLogger<1>::flush();
     std::cout << "\n  press enter to quit test Harness";

@@ -18,9 +18,6 @@
     <ClCompile Include="CSE687_Phase3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="callable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CallableTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,9 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Comm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="callable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ExampleTest.h">

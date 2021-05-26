@@ -15,22 +15,26 @@
 class TestServer
 {
 public:
-	
-	
 	TestServer();
 
-	void StartServer();
-
-	void StopServer();
-
 	void InitilizeTestServer();
+	void StartServer();
+	void StopServer();
+	bool SetOutputFile(const std::string& aFilePath);
+	void SetOutputStream(std::ostream& aStream);
+
+	void StartTest(const std::string& aName,
+		const LogLevel aLogLevel);
+	void StopTest();
+
+	void ProcessReplies();
+	void ReportResults();
 
 private:
 	
-	//void ProcessReplies();
-	
-	TestManager* mgr;
-	bool shutdown;
-
+	TestManager* _mgr;
+	bool _shutdown;
+	int _numMsgsSent;
+	BlockingQueue<Message> _msgsRcvd;
 };
 

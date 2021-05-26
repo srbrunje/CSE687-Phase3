@@ -87,7 +87,7 @@ std::string Message::GetAuthor() const
 }
 std::string Message::GetTimestamp() const
 {
-	return _body["author"];
+	return _body["timestamp"];
 }
 std::string Message::GetBodyStr(const int aFormat) const
 {
@@ -114,6 +114,16 @@ void Message::Clear()
 bool Message::Contains(const std::string& aKey) const
 {
 	return _body.contains(aKey);
+}
+
+bool Message::Contains(const std::vector<std::string>& aKeys) const
+{
+	for (const std::string& k : aKeys) {
+		if (!Contains(k)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 Message Message::FromString(const std::string& aMsgStr)

@@ -48,6 +48,9 @@ void TestResult::SetName(const std::string& aName)
 void TestResult::SetStatus(const TestResult::Status aStatus)
 {
 	_status = aStatus;
+	if (_status == Status::PASS) {
+		_errorMessage = ""; // erase any default error messages if it passed
+	}
 }
 
 /** SetErrorMessage - public
@@ -166,4 +169,28 @@ double TestResult::GetDuration() const
 LogLevel TestResult::GetLogLevel() const
 {
 	return _logLevel;
+}
+
+
+
+
+/** StatusToString - public
+ * Description: Takes a Status as input and returns a string describing it
+ * Parameters: a Status to convert
+ * Return: std::string describing the given status
+*/
+std::string TestResult::StatusToString(Status aStatus)
+{
+	switch (aStatus)
+	{
+	case TestResult::Status::PASS:
+		return "PASS";
+	case TestResult::Status::FAIL:
+		return "FAIL";
+	case TestResult::Status::FAIL_EXC:
+		return "FAIL WITH EXCEPTION";
+	case TestResult::Status::NOT_RUN: // fall-through
+	default:
+		return "NOT RUN";
+	}
 }

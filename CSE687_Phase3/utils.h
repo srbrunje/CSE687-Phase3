@@ -132,8 +132,7 @@ namespace timing {
 	static hack fromULLStr(const std::string& ticks)
 	{
 		ull st = std::stoull(ticks, 0, 0);
-		timing::hack tp = timing::fromULL(st);
-		return tp;
+		return fromULL(st);
 	}
 
 
@@ -150,37 +149,30 @@ namespace timing {
 			+ IntToStr(tmNow.tm_sec);
 		return str;
 	}
-}
 
 
-/** FormatTimeString - public
-* Description: Formats the time string. Scales the units to report units in 1000x incraments.
-*              seconds, milli, micro, nano
-* Parameter 0: The time to scale
-* Return: The formated string
-*/
-static std::string FormatTimeString(double dDurration)
-{
-	std::string rtn = "";
+	static std::string FormatTimeString(double dDurration)
+	{
+		std::string rtn = "";
 
-	if (dDurration > 1000000) //scale to seconds
-	{
-		rtn = DblToStr(dDurration / 1000000) + " seconds";
+		if (dDurration > 1000000) //scale to seconds
+		{
+			rtn = DblToStr(dDurration / 1000000) + " seconds";
+		}
+		else if (dDurration > 1000) //scale to milliseconds
+		{
+			rtn = DblToStr(dDurration / 1000) + " milliseconds";
+		}
+		else if (dDurration < 1) //scale to nanoseconds
+		{
+			rtn = DblToStr(dDurration * 1000) + " nanoseconds";
+		}
+		else //microseconds
+		{
+			rtn = DblToStr(dDurration) + " microseconds";
+		}
+		return rtn;
 	}
-	else if (dDurration > 1000) //scale to milliseconds
-	{
-		rtn = DblToStr(dDurration / 1000) + " milliseconds";
-	}
-	else if (dDurration < 1) //scale to nanoseconds
-	{
-		rtn = DblToStr(dDurration * 1000) + " nanoseconds";
-	}
-	else //microseconds
-	{
-		rtn = DblToStr(dDurration) + " microseconds";
-	}
-
-	return rtn;
 }
 
 

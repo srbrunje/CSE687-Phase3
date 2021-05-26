@@ -40,9 +40,6 @@ private:
 	timing::hack _endTime;		// the time the test finished execution
 	LogLevel     _logLevel;		// the level of logging desired
 
-	// Private Member Functions (PMF)
-	// - none for now
-
 public:
 	// Constructors
 	TestResult(const std::string& aName = "");	// default constructor with option of setting name
@@ -64,4 +61,7 @@ public:
 	timing::hack GetEndTime() const;
 	double       GetDuration() const;	// returns the time taken to run the test in microseconds
 	LogLevel     GetLogLevel() const;
+
+	// Support Functions
+	static std::string StatusToString(Status aStatus);
 };

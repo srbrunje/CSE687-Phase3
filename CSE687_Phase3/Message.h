@@ -2,6 +2,7 @@
 #define __MESSAGE_H
 
 #include <string>
+#include <cstdint>
 
 #include "json.hpp"
 using JSON = nlohmann::json;
@@ -83,10 +84,12 @@ public:
     std::string GetBodyStr(const int aFormat = 4) const;
 
     template<typename T>
-    T GetValue(const std::string& aKey) {
-        JSON tmp = T();
-        if (_body.contains(aKey) && _body[aKey].type() == tmp.type()) {
-            return _body[aKey];
+    T GetValue(const std::string& aKey) const {
+        if (_body.contains(aKey)) {
+            JSON tmp = T();
+            if (_body[aKey].type() == tmp.type()) { // ensure same type
+                return _body[aKey];
+            }
         }
         return T();
     }
@@ -94,6 +97,7 @@ public:
     // Support Functions
     void Clear();
     bool Contains(const std::string& aKey) const;
+    bool Contains(const std::vector<std::string>& aKeys) const;
     static Message FromString(const std::string& aMsgStr);
 
 private:

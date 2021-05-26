@@ -140,7 +140,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="callable.cpp" />
     <ClCompile Include="CallableTest.cpp" />
     <ClCompile Include="ClientHandler.cpp" />
     <ClCompile Include="Comm.cpp" />
@@ -165,7 +164,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="callable.h" />
     <ClInclude Include="ClientHandler.h" />
     <ClInclude Include="Comm.h" />
     <ClInclude Include="ExampleTest.h" />

@@ -103,11 +103,11 @@ void TestMSG(TestResult aResult)
 	msg.SetAuthor("Some author of some sort...");
 	msg.SetTimestamp(timing::GetDateStr()); // uses current time as timestamp
 	msg.SetName(aResult.GetName());
-	msg.SetValue("status", (int)aResult.GetStatus());
+	msg.SetValue("status", static_cast<uint8_t>(aResult.GetStatus()));
 	msg.SetValue("errMsg", aResult.GetErrorMessage());
-	msg.SetValue("startTime", timing::GetDateStr(aResult.GetStartTime()));
-	msg.SetValue("endTime", timing::GetDateStr(aResult.GetEndTime()));
-	msg.SetValue("logLevel", (int)aResult.GetLogLevel());
+	msg.SetValue("startTime", timing::toString(aResult.GetStartTime()));
+	msg.SetValue("endTime", timing::toString(aResult.GetEndTime()));
+	msg.SetValue("logLevel", static_cast<uint8_t>(aResult.GetLogLevel()));
 
 	// send the message
 	comm.postMessage(msg);
@@ -253,7 +253,7 @@ void TestManager::ReportResults()
 		"Completed " + std::to_string(_tests.size()) + " tests with "
 		+ std::to_string(_numPass) + " passes and " + std::to_string(_numFail)
 		+ " failures with " + std::to_string(_numExc)
-		+ " exceptions\nTotal time elapsed: " + FormatTimeString(_timeElapsed) + "\n\n"
+		+ " exceptions\nTotal time elapsed: " + timing::FormatTimeString(_timeElapsed) + "\n\n"
 	);
 
 	// Log the results per individual test
@@ -286,4 +286,9 @@ int TestManager::FindTestNumber(const std::string& aName)
 		}
 	}
 	return -1;
+}
+
+TestLogger* TestManager::GetLoggerPtr()
+{
+	return &_logger;
 }
