@@ -43,6 +43,7 @@ int main()
     TestServer testServer = TestServer();
     testServer.StartServer();   
     testServer.SetOutputFile("_output.txt");
+    //testServer.SetOutputToStream(false); // uncomment to disable stream output of test results
 
     //start the reply socket
     std::thread reply(&TestServer::ProcessReplies, &testServer);

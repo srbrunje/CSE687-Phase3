@@ -141,11 +141,20 @@ bool TestServer::SetOutputFile(const std::string& aFilePath)
     if (_mgr == nullptr) _mgr = TestManager::GetInstance();
     return _mgr->SetOutputFile(aFilePath);
 }
-
+void TestServer::SetOutputToFile(const bool bOutput)
+{
+    if (_mgr == nullptr) _mgr = TestManager::GetInstance();
+    _mgr->SetOutputToFile(bOutput);
+}
 void TestServer::SetOutputStream(std::ostream& aStream)
 {
     if (_mgr == nullptr) _mgr = TestManager::GetInstance();
     _mgr->SetOutputStream(aStream);
+}
+void TestServer::SetOutputToStream(const bool bOutput)
+{
+    if (_mgr == nullptr) _mgr = TestManager::GetInstance();
+    _mgr->SetOutputToStream(bOutput);
 }
 
 

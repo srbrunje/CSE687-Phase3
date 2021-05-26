@@ -285,7 +285,7 @@ bool TestLogger::LogMessage(const std::string& aMessage)
 void TestLogger::ClearContents()
 {
 	// Ensure the output file exists
-	if (std::filesystem::exists(_outputFile)) {
+	if (_outputToFile && std::filesystem::exists(_outputFile)) {
 		std::ofstream ofs;     // open a file stream
 		ofs.open(_outputFile); // opens file and overwrites contents
 		ofs.close();           // closes file

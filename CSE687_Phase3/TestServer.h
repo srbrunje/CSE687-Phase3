@@ -21,7 +21,9 @@ public:
 	void StartServer();
 	void StopServer();
 	bool SetOutputFile(const std::string& aFilePath);
+	void SetOutputToFile(const bool bOutput);
 	void SetOutputStream(std::ostream& aStream);
+	void SetOutputToStream(const bool bOutput);
 
 	void StartTest(const std::string& aName,
 		const LogLevel aLogLevel);
