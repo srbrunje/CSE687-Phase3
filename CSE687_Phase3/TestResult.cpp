@@ -48,6 +48,9 @@ void TestResult::SetName(const std::string& aName)
 void TestResult::SetStatus(const TestResult::Status aStatus)
 {
 	_status = aStatus;
+	if (_status == Status::PASS) {
+		_errorMessage = ""; // erase any default error messages if it passed
+	}
 }
 
 /** SetErrorMessage - public
@@ -124,6 +127,26 @@ std::string TestResult::GetErrorMessage() const
 	return _errorMessage;
 }
 
+/** GetStartTime - public
+ * Description: Returns the _startTime timing::hack PMV
+ * Parameters: none
+ * Return: timing::hack (aka std::chrono::system_clock::time_point)
+*/
+timing::hack TestResult::GetStartTime() const
+{
+	return _startTime;
+}
+
+/** GetEndTime - public
+ * Description: Returns the _endTime timing::hack PMV
+ * Parameters: none
+ * Return: timing::hack (aka std::chrono::system_clock::time_point)
+*/
+timing::hack TestResult::GetEndTime() const
+{
+	return _endTime;
+}
+
 /** GetDuration - public
  * Description: Returns the time it took to completely execute the test
  *    in milliseconds, or -1.0 if the test has not completed yet.
@@ -146,4 +169,28 @@ double TestResult::GetDuration() const
 LogLevel TestResult::GetLogLevel() const
 {
 	return _logLevel;
+}
+
+
+
+
+/** StatusToString - public
+ * Description: Takes a Status as input and returns a string describing it
+ * Parameters: a Status to convert
+ * Return: std::string describing the given status
+*/
+std::string TestResult::StatusToString(Status aStatus)
+{
+	switch (aStatus)
+	{
+	case TestResult::Status::PASS:
+		return "PASS";
+	case TestResult::Status::FAIL:
+		return "FAIL";
+	case TestResult::Status::FAIL_EXC:
+		return "FAIL WITH EXCEPTION";
+	case TestResult::Status::NOT_RUN: // fall-through
+	default:
+		return "NOT RUN";
+	}
 }

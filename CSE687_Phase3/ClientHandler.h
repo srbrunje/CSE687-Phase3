@@ -5,7 +5,7 @@
 #include "../Cpp11-BlockingQueue/Cpp11-BlockingQueue.h"
 #include "../Logger/Logger.h"
 #include "../Utilities/Utilities.h"
-#include "../Message/Message.h"
+#include "Message.h"
 #include "../Sockets/Sockets.h"
 
 #include <iostream>
@@ -14,7 +14,6 @@
 #include <algorithm>
 #include <conio.h>
 
-using namespace MsgPassingCommunication;
 using namespace Sockets;
 
 //----< callable object posts incoming message to rcvQ >-------------
@@ -70,13 +69,13 @@ public:
                 // invalid message
                 break;
             }
-            Message msg = Message::fromString(msgString);
-            StaticLogger<1>::write("\n  -- " + clientHandlerName + " RecvThread read message: " + msg.name());
+            Message msg = Message::FromString(msgString);
+            StaticLogger<1>::write("\n  -- " + clientHandlerName + " RecvThread read message: " + msg.GetName());
             //std::cout << "\n  -- " + clientHandlerName + " RecvThread read message: " + msg.name();
           
             pQ_->enQ(msg);
             //std::cout << "\n  -- message enqueued in rcvQ";
-            if (msg.command() == "quit")
+            if (msg.GetCommand() == "quit")
                 break;
         }
         StaticLogger<1>::write("\n  -- terminating ClientHandler thread");
