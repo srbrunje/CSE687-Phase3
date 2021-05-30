@@ -23,6 +23,7 @@
 #include <filesystem> // requires C++17 or later
 
 #include "TestClass.h"
+#include "Message.h"
 
 class TestLogger {
 private:
@@ -49,8 +50,9 @@ public:
 	std::ostream* GetOutputStream() const;
 
 	// Support Functions
-	void LogResult(const TestResult& aTestResultPtr);
-	void LogMessage(const std::string& aMessage);
+	bool LogResult(const TestResult& aTestResultPtr);
+	bool LogResult(const Message& aMsg);
+	bool LogMessage(const std::string& aMessage);
 	void ClearContents();
 };
 

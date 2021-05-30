@@ -154,10 +154,10 @@ std::ostream* TestLogger::GetOutputStream() const
 
 /** LogResult - public
  * Description: Logs data retrieved from a TestResult to the appropriate logging outputs
- * Parameter 0: a pointer to a TestResult containing data to be logged
- * Return: nothing
+ * Parameter 0: a TestResult containing data to be logged
+ * Return: bool: false if test not finished yet
 */
-void TestLogger::LogResult(const TestResult& aTestResult)
+bool TestLogger::LogResult(const TestResult& aTestResult)
 {
 	// a string to contain the data from the TestResult
 	std::string msg = "Test: " + aTestResult.GetName() + "\n";
@@ -176,6 +176,7 @@ void TestLogger::LogResult(const TestResult& aTestResult)
 		// TODO: determine if std::cerr is where errors like this should actually go
 		std::cerr << "Unable to log results of test " << aTestResult.GetName()
 			<< ".  Test has not finished yet.\n";
+		return false;
 	}
 
 	// Get the LogLevel-appropriate data and append that to the message
@@ -190,22 +191,74 @@ void TestLogger::LogResult(const TestResult& aTestResult)
 		|| ll == LogLevel::Pass_Fail_with_error_message_and_test_duration)
 	{
 		// Record the timing data from the TestResult		
-		msg += "Timing: " + FormatTimeString(aTestResult.GetDuration()) + "\n";
+		msg += "Timing: " + timing::FormatTimeString(aTestResult.GetDuration()) + "\n";
 	}
-	msg += '\n'; // append one final new line for clarity
+	msg += "\n"; // append extra new lines for clarity
 
-	// Call LogMessage() with the result's output as the message to maintain one
-	// means of outputting rather than duplicating code
-	LogMessage(msg);
+	return LogMessage(msg);
+}
+
+/** LogResult (overload) - public
+ * Description: Logs test result data retrieved from a Message to the appropriate logging outputs
+ * Parameter 0: a Message containing the test result data
+ * Return: bool: false if the message is missing required test result data or test has not finished
+*/
+bool TestLogger::LogResult(const Message& aMsg)
+{
+	if (!aMsg.Contains(std::vector<std::string>({
+		"to","from","author","timestamp",
+		"name","status","errMsg","startTime","endTime","logLevel"
+		})))
+	{
+		return false;
+	}
+
+	if (aMsg.GetValue<uint8_t>("status") >= static_cast<uint8_t>(TestResult::Status::NOT_RUN))
+	{
+		std::cerr << "Unable to log results of test " << aMsg.GetName()
+			<< ".  Test has not finished yet.\n";
+		return false;
+	}
+	
+	std::string result = "Test Name:   " + aMsg.GetName()
+		+ "\nAuthor:      " + aMsg.GetAuthor()
+		+ "\nSource:      " + aMsg.GetFrom().toString()
+		+ "\nDestination: " + aMsg.GetTo().toString()
+		+ "\nTimestamp:   " + aMsg.GetTimestamp()
+		+ "\n\nTest Results:"
+		+ "\n     Status: " + TestResult::StatusToString(static_cast<TestResult::Status>(aMsg.GetValue<uint8_t>("status")));
+	
+	LogLevel ll = (LogLevel)aMsg.GetValue<uint8_t>("logLevel");
+	if (ll == LogLevel::Pass_Fail_with_error_message
+		|| ll == LogLevel::Pass_Fail_with_error_message_and_test_duration)
+	{
+		// Record the error messages from the TestResult
+		result += "\n     Errors: " + aMsg.GetValue<std::string>("errMsg");
+	}
+	if (ll == LogLevel::Pass_Fail_with_test_duration
+		|| ll == LogLevel::Pass_Fail_with_error_message_and_test_duration)
+	{
+		// Record the timing data from the TestResult
+		timing::hack tStart = timing::fromULLStr(aMsg.GetValue<std::string>("startTime"));
+		timing::hack tEnd = timing::fromULLStr(aMsg.GetValue<std::string>("endTime"));
+		result += "\n   Duration: " + timing::FormatTimeString(timing::duration_us(tStart, tEnd));
+	}
+	result += "\n"; // append extra new lines for clarity
+
+	return LogMessage(result);
 }
 
 /** LogMessage - public
  * Description: Logs a given message to the appropriate logging outputs
  * Parameter 0: a message to log in the form of a string
- * Return: nothing
+ * Return: bool: false if unable to access the specified file, true otherwise
 */
-void TestLogger::LogMessage(const std::string& aMessage)
+bool TestLogger::LogMessage(const std::string& aMessage)
 {
+	if (_outputToStream) {
+		// Outputting to stream
+		(*_outputStream) << aMessage;
+	}
 	if (_outputToFile) {
 		// Outputting to file
 		std::ofstream ofs;
@@ -217,13 +270,10 @@ void TestLogger::LogMessage(const std::string& aMessage)
 		else {
 			std::cerr << "Unable to open file for logging: bad file path or file already open.\n"
 				<< "File path: " << _outputFile << '\n';
+			return false;
 		}
 	}
-
-	if (_outputToStream) {
-		// Outputting to stream
-		(*_outputStream) << aMessage;
-	}
+	return true;
 }
 
 /** ClearContents - public
@@ -235,7 +285,7 @@ void TestLogger::LogMessage(const std::string& aMessage)
 void TestLogger::ClearContents()
 {
 	// Ensure the output file exists
-	if (std::filesystem::exists(_outputFile)) {
+	if (_outputToFile && std::filesystem::exists(_outputFile)) {
 		std::ofstream ofs;     // open a file stream
 		ofs.open(_outputFile); // opens file and overwrites contents
 		ofs.close();           // closes file

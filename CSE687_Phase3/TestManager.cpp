@@ -98,34 +98,20 @@ void TestMSG(TestResult aResult)
 	EndPoint serverEP("localhost", 9893);
 	EndPoint clientEP("localhost", 9892);
 
+	// Create and populate the message
 	Message msg(serverEP, clientEP);
-	std::string rply = aResult.GetName();
+	msg.SetAuthor("Some author");
+	msg.SetTimestamp(timing::GetDateStr()); // uses current time as timestamp
+	msg.SetName(aResult.GetName());
+	msg.SetValue("status", static_cast<uint8_t>(aResult.GetStatus()));
+	msg.SetValue("errMsg", aResult.GetErrorMessage());
+	msg.SetValue("startTime", timing::toString(aResult.GetStartTime()));
+	msg.SetValue("endTime", timing::toString(aResult.GetEndTime()));
+	msg.SetValue("logLevel", static_cast<uint8_t>(aResult.GetLogLevel()));
 
-	// set name
-	if (TestResult::Status::PASS == aResult.GetStatus()) {
-		rply += ": Pass";
-	}
-	else if (TestResult::Status::FAIL == aResult.GetStatus()) {
-		rply += ": Fail";
-	}
-	else if (TestResult::Status::FAIL_EXC == aResult.GetStatus()) {
-		rply += ": Fail with exception";
-	}
-	else if (TestResult::Status::NOT_RUN == aResult.GetStatus()) {
-		rply += ": NOT RUN";
-	}
-	else {
-		rply += ": UNKNOWN";
-	}
-
-	double duration = aResult.GetDuration();
-	rply += " " + FormatTimeString(duration);
-	msg.name(rply);
-
-	// set status
+	// send the message
 	comm.postMessage(msg);
 	comm.stop();
-	//::Sleep(200);
 }
 
 /*************************************************************************
@@ -267,7 +253,7 @@ void TestManager::ReportResults()
 		"Completed " + std::to_string(_tests.size()) + " tests with "
 		+ std::to_string(_numPass) + " passes and " + std::to_string(_numFail)
 		+ " failures with " + std::to_string(_numExc)
-		+ " exceptions\nTotal time elapsed: " + FormatTimeString(_timeElapsed) + "\n\n"
+		+ " exceptions\nTotal time elapsed: " + timing::FormatTimeString(_timeElapsed) + "\n\n"
 	);
 
 	// Log the results per individual test
@@ -300,4 +286,9 @@ int TestManager::FindTestNumber(const std::string& aName)
 		}
 	}
 	return -1;
+}
+
+TestLogger* TestManager::GetLoggerPtr()
+{
+	return &_logger;
 }

@@ -7,14 +7,14 @@
 #include <algorithm>
 #include <conio.h>
 
+using namespace MsgPassingCommunication;
+
 TestServer::TestServer()
 {
-
     std::cout << "create test server class\n";
-    bool shutdown = false;
-
-    //create the tests
-    mgr = TestManager::GetInstance();
+    _shutdown = false;
+    _mgr = TestManager::GetInstance();
+    _numMsgsSent = 0;
 }
 
 
@@ -23,9 +23,10 @@ TestServer::TestServer()
 /// </summary>
 void TestServer::InitilizeTestServer()
 {
-    
-    //mgr.SetOutputFile("output.txt"); // Define your output here, either relative or absolute
-    mgr->SetOutputToStream(true);
+    if (_mgr == nullptr) _mgr = TestManager::GetInstance();
+
+    //_mgr.SetOutputFile("output.txt"); // Define your output here, either relative or absolute
+    _mgr->SetOutputToStream(true);
 
 
     // Math with integers
@@ -34,31 +35,32 @@ void TestServer::InitilizeTestServer()
     MulFunctor<int> iMul(4, 0, 4); // should FAIL 4 * 0 != 4
     DivFunctor<int> iDiv(4, 0, 4); // should FAIL with divide by zero exception
 
-    LongRunFunctor lRun1(1, 200);
-    LongRunFunctor lRun2(2, 200);
-    LongRunFunctor lRun3(3, 200);
-    LongRunFunctor lRun4(4, 200);
+    LongRunFunctor lRun1(1);
+    LongRunFunctor lRun2(2);
+    LongRunFunctor lRun3(3);
+    LongRunFunctor lRun4(4);
 
-    mgr->CreateTest(iAdd, LogLevel::Pass_Fail, "Add: 4+0=4", "Error: this ouput should have printed out 4");
-    mgr->CreateTest(iSub, LogLevel::Pass_Fail_with_error_message, "Sub: 4-0=4");
-    mgr->CreateTest(iMul, LogLevel::Pass_Fail_with_error_message_and_test_duration, "Mul: 4*0=4", "Custom error, idk what went wrong to be honest");
-    mgr->CreateTest(iDiv, LogLevel::Pass_Fail_with_error_message_and_test_duration, "Div: 4/0=4");
+    _mgr->CreateTest(iAdd, LogLevel::Pass_Fail, "Add: 4+0=4", "This should never happen");
+    _mgr->CreateTest(iSub, LogLevel::Pass_Fail_with_error_message, "Sub: 4-0=4", "This should never happen");
+    _mgr->CreateTest(iMul, LogLevel::Pass_Fail_with_error_message_and_test_duration, "Mul: 4*0=4", "This test should fail");
+    _mgr->CreateTest(iDiv, LogLevel::Pass_Fail_with_error_message_and_test_duration, "Div: 4/0=4", "This test should fail");
 
-    mgr->CreateTest(lRun1, LogLevel::Pass_Fail_with_error_message, "LongRun1");
-    mgr->CreateTest(lRun2, LogLevel::Pass_Fail_with_error_message, "LongRun2");
-    mgr->CreateTest(lRun3, LogLevel::Pass_Fail_with_error_message, "LongRun3");
-    mgr->CreateTest(lRun4, LogLevel::Pass_Fail_with_error_message, "LongRun4");
+    _mgr->CreateTest(lRun1, LogLevel::Pass_Fail_with_error_message, "LongRun1");
+    _mgr->CreateTest(lRun2, LogLevel::Pass_Fail_with_error_message, "LongRun2");
+    _mgr->CreateTest(lRun3, LogLevel::Pass_Fail_with_error_message, "LongRun3");
+    _mgr->CreateTest(lRun4, LogLevel::Pass_Fail_with_error_message, "LongRun4");
 }
 
 
-bool runTest(TestManager* mgr, int testNumber)
+bool runTest(TestManager* _mgr, int testNumber)
 {
-    mgr->RunTest(testNumber);
+    if (_mgr == nullptr) _mgr = TestManager::GetInstance();
+    _mgr->RunTest(testNumber);
     return true;
 }
 
 
-void ListenerThread(TestManager* mgr)
+void ListenerThread(TestManager* _mgr)
 {
   //  DebugLog::attach(&std::cout);
   //  DebugLog::start();
@@ -75,17 +77,19 @@ void ListenerThread(TestManager* mgr)
     comm.start();
 
     Message msg, rply;
-    rply.name("reply");
+    rply.SetName("reply");
     size_t count = 0;
     while (true)
     {
         // display each incoming message
 
         msg = comm.getMessage();
-        std::cout << "\n  " + comm.name() + " received Test Request: " << msg.name();
+        std::cout << "\n  " + comm.name() + " received Test Request: " << msg.GetName() + " From: " +
+            msg.GetAuthor();
 
         //get the test number
-        int testNumber = mgr->FindTestNumber(msg.name());
+        if (_mgr == nullptr) _mgr = TestManager::GetInstance();
+        int testNumber = _mgr->FindTestNumber(msg.GetName());
 
         if (testNumber >= 0)
         {
@@ -93,18 +97,18 @@ void ListenerThread(TestManager* mgr)
            
 
            //run the test
-            ThreadPool<4>::CallObj t = [mgr,testNumber]() ->bool { mgr->RunTest(testNumber); return true; };
+            ThreadPool<4>::CallObj t = [_mgr,testNumber]() ->bool { _mgr->RunTest(testNumber); return true; };
             trpl.workItem(t);
 
 
-        //   std::thread t1(runTest, mgr, testNumber);
+        //   std::thread t1(runTest, _mgr, testNumber);
         //   t1.detach();
 
-           //mgr->runTest(testNumber);
+           //_mgr->runTest(testNumber);
 
         }
 
-        if (msg.command() == "stop")
+        if (msg.GetCommand() == "stop")
         {
             break;
         }
@@ -123,7 +127,8 @@ void TestServer::StartServer()
     InitilizeTestServer();
 
     //start the listner thread
-    std::thread testServer(ListenerThread,mgr);
+    if (_mgr == nullptr) _mgr = TestManager::GetInstance();
+    std::thread testServer(ListenerThread,_mgr);
     testServer.detach();   
     
 }
@@ -132,3 +137,116 @@ void TestServer::StopServer()
 {
 }
 
+/*
+bool TestServer::SetOutputFile(const std::string& aFilePath)
+{
+    if (_mgr == nullptr) _mgr = TestManager::GetInstance();
+    return _mgr->SetOutputFile(aFilePath);
+}
+void TestServer::SetOutputToFile(const bool bOutput)
+{
+    if (_mgr == nullptr) _mgr = TestManager::GetInstance();
+    _mgr->SetOutputToFile(bOutput);
+}
+void TestServer::SetOutputStream(std::ostream& aStream)
+{
+    if (_mgr == nullptr) _mgr = TestManager::GetInstance();
+    _mgr->SetOutputStream(aStream);
+}
+void TestServer::SetOutputToStream(const bool bOutput)
+{
+    if (_mgr == nullptr) _mgr = TestManager::GetInstance();
+    _mgr->SetOutputToStream(bOutput);
+}
+
+
+void TestServer::StartTest(const std::string& aTestName, const LogLevel aLogLevel)
+{
+    //create the comm connection
+    Comm comm(EndPoint("localhost", 9891), "Send Test Request");
+    comm.start();
+    EndPoint serverEP("localhost", 9890);
+    EndPoint clientEP("localhost", 9891);
+
+    // create the message
+    Message testRequest(serverEP, clientEP);
+    testRequest.SetName(aTestName);
+    testRequest.SetValue("logLevel", (int)aLogLevel);
+
+    // send the message
+    _numMsgsSent++;
+    comm.postMessage(testRequest);
+    comm.stop();
+}
+*/
+/*
+void TestServer::StopTest()
+{
+    //create the comm connection
+    Comm comm(EndPoint("localhost", 9891), "Send Test Request");
+    comm.start();
+    EndPoint serverEP("localhost", 9890);
+    EndPoint clientEP("localhost", 9891);
+
+    // create the message
+    Message testRequest(serverEP, clientEP);
+    testRequest.SetName("stop"); //the name of the test to run
+    testRequest.SetCommand("stop");
+
+    // send the message
+    comm.postMessage(testRequest);
+    comm.stop();
+}
+
+
+
+
+void TestServer::ProcessReplies()
+{
+    EndPoint serverEP("localhost", 9893);
+    Comm comm(serverEP, "Client Status");
+    comm.start();
+
+    Message msg, rply;
+    rply.SetName("reply");
+    size_t count = 0;
+    while (true)
+    {
+        // display each incoming message, and track the number
+        msg = comm.getMessage();
+        std::cout << "\n" + comm.name() + " received Test Result: " << msg.GetName();
+
+        if (msg.GetCommand() == "stop") {
+            break;
+        }
+
+        _msgsRcvd.enQ(msg);
+    }
+    comm.stop();
+}
+
+void TestServer::ReportResults()
+{
+    // Wait until all replies have been heard - or a max waiting time is up
+    timing::hack beginWait = timing::now();
+    while (_msgsRcvd.size() < _numMsgsSent) {
+        if (timing::duration_us(beginWait) > 10000000) { // 10s wait limit
+            break;
+        }
+    }
+
+    // Go through all results and log them
+    if (_mgr == nullptr) {
+        _mgr = TestManager::GetInstance();
+    }
+    TestLogger* lgr = _mgr->GetLoggerPtr();
+    int i = 1;
+    lgr->ClearContents(); // erase any old data stored in the output file (if any)
+    while(_msgsRcvd.size() > 0) {
+        lgr->LogMessage("\n--------------------------------------------------------------\nTest "
+            + std::to_string(i++) + " of " + std::to_string(_numMsgsSent) + ":\n\n");
+        lgr->LogResult(_msgsRcvd.deQ());
+        lgr->LogMessage("--------------------------------------------------------------\n\n");
+    }
+    
+} */
