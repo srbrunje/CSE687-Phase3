@@ -39,11 +39,12 @@ int main()
     //start the server
     TestServer testServer = TestServer();
     testServer.StartServer();   
-    testServer.SetOutputFile("_output.txt");
-    //testServer.SetOutputToStream(false); // uncomment to disable stream output of test results
+    
+
+    EndPoint client1EP = EndPoint("localhost", 9891);    
 
     //create the client
-    TestClient testClient = TestClient("Client 1", 9891);
+    TestClient testClient = TestClient("Client 1", client1EP);
 
     testClient.SetOutputFile("_clientoutput.txt");
 

@@ -16,14 +16,25 @@
 class TestClient
 {
 public:
-	TestClient(const std::string clientName, const EndPoint::Port clientPort);
+	TestClient(const std::string clientName, const EndPoint clientEP);
+
+	void SetClientName(const std::string name);
+
+	std::string GetClientName();
+
+	void SetServerEndpoint(const EndPoint endPoint);
+
+	void SetClientEndpoint(const EndPoint endPoint);
+
+	EndPoint GetClientEndPoint();
+
+	EndPoint GetServerEndPoint();
 
 	bool SetOutputFile(const std::string& aFilePath);
 	void SetOutputToFile(const bool bOutput);
 	void SetOutputStream(std::ostream& aStream);
 	void SetOutputToStream(const bool bOutput);
 
-	void StartTests();
 
 	void StartTest(const std::string& aTestName, const LogLevel aLogLevel);
 	void StopTest();

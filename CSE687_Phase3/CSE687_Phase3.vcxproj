@@ -167,7 +167,6 @@
     <ClInclude Include="ClientHandler.h" />
     <ClInclude Include="Comm.h" />
     <ClInclude Include="ExampleTest.h" />
-    <ClInclude Include="json.hpp" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="TestClient.h" />
     <ClInclude Include="TestLogger.h" />
@@ -180,7 +179,6 @@
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
     <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

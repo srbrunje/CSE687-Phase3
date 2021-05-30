@@ -80,9 +80,6 @@
     <ClInclude Include="TestClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="json.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Message.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -90,6 +87,5 @@
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
     <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
   </ItemGroup>
 </Project>

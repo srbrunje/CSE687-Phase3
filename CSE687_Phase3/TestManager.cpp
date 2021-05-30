@@ -100,7 +100,7 @@ void TestMSG(TestResult aResult)
 
 	// Create and populate the message
 	Message msg(serverEP, clientEP);
-	msg.SetAuthor("Some author of some sort...");
+	msg.SetAuthor("Some author");
 	msg.SetTimestamp(timing::GetDateStr()); // uses current time as timestamp
 	msg.SetName(aResult.GetName());
 	msg.SetValue("status", static_cast<uint8_t>(aResult.GetStatus()));

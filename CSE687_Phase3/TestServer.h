@@ -20,7 +20,7 @@ public:
 	void InitilizeTestServer();
 	void StartServer();
 	void StopServer();
-	bool SetOutputFile(const std::string& aFilePath);
+/*	bool SetOutputFile(const std::string& aFilePath);
 	void SetOutputToFile(const bool bOutput);
 	void SetOutputStream(std::ostream& aStream);
 	void SetOutputToStream(const bool bOutput);
@@ -28,9 +28,9 @@ public:
 	void StartTest(const std::string& aName,
 		const LogLevel aLogLevel);
 	void StopTest();
-
+	*/
 	void ProcessReplies();
-	void ReportResults();
+	//void ReportResults();
 
 private:
 	

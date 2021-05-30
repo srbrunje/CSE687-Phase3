@@ -2,53 +2,73 @@
 
 using namespace MsgPassingCommunication;
 
-TestClient::TestClient(const std::string clientName, const EndPoint::Port clientPort)
+TestClient::TestClient(const std::string clientName, const EndPoint clientEP)
 {
     std::cout << "create test client class\n";    
     _numMsgsSent = 0;
     _myName = clientName;
-    _myPort = clientPort;
+    _myPort = clientEP.port;
 
-    _clientEP = EndPoint("localhost", _myPort);
+    _clientEP = clientEP;// EndPoint("localhost", _myPort);
 
     _serverEP = EndPoint("localhost", 9890);
 
     StartListenerThread();
 }
 
+void TestClient::SetClientName(const std::string name)
+{
+    _myName = name;
+}
+
+std::string TestClient::GetClientName()
+{
+    return _myName;
+}
+
+
+
+void TestClient::SetServerEndpoint(const EndPoint endPoint)
+{
+    _serverEP = endPoint;
+}
+
+void TestClient::SetClientEndpoint(const EndPoint endPoint)
+{
+    _clientEP = endPoint;
+}
+
+EndPoint TestClient::GetClientEndPoint()
+{
+    return _clientEP;
+}
+
+EndPoint TestClient::GetServerEndPoint()
+{
+    return _serverEP;
+}
+
+
 bool TestClient::SetOutputFile(const std::string& aFilePath)
 {
-    return false;
+    return _lgr.SetOutputFile(aFilePath);
 }
 
 void TestClient::SetOutputToFile(const bool bOutput)
 {
+    _lgr.SetOutputToFile(bOutput);
 }
 
 void TestClient::SetOutputStream(std::ostream& aStream)
 {
+    _lgr.SetOutputStream(aStream);
 }
 
 void TestClient::SetOutputToStream(const bool bOutput)
 {
+    _lgr.SetOutputToStream(bOutput);
 }
 
-void TestClient::StartTests()
-{
-    StartTest("LongRun4", LogLevel::Pass_Fail);
-    StartTest("LongRun3", LogLevel::Pass_Fail_with_error_message);
-    StartTest("LongRun2", LogLevel::Pass_Fail_with_test_duration);
-    StartTest("LongRun1", LogLevel::Pass_Fail_with_error_message_and_test_duration);
-    StartTest("Add: 4+0=4", LogLevel::Pass_Fail_with_error_message);
-    StartTest("Mul: 4*0=4", LogLevel::Pass_Fail_with_test_duration);
-    StartTest("Div: 4/0=4", LogLevel::Pass_Fail_with_error_message_and_test_duration);
-    StartTest("LongRun4", LogLevel::Pass_Fail_with_error_message_and_test_duration);
-    StartTest("Add: 4+0=4", LogLevel::Pass_Fail_with_error_message);
-    StartTest("Mul: 4*0=4", LogLevel::Pass_Fail_with_test_duration);
-    StartTest("Sub: 4-0=4", LogLevel::Pass_Fail);
-    StartTest("Div: 4/0=4", LogLevel::Pass_Fail);
-    StopTest();
-}
 
 void TestClient::StartTest(const std::string& aTestName, const LogLevel aLogLevel)
 {
@@ -69,6 +89,7 @@ void TestClient::StartTest(const std::string& aTestName, const LogLevel aLogLeve
     comm.stop();
 }
 
+// Sends a message to the server to indicate that no more test requests will be comming from this client
 void TestClient::StopTest()
 {
     //create the comm connection
@@ -86,12 +107,14 @@ void TestClient::StopTest()
     comm.stop();
 }
 
+//starts the listener thread to handle replies from the test server
 void TestClient::StartListenerThread()
 {
     std::thread reply(&TestClient::ProcessReplies, this);
     reply.detach();
 }
 
+// process the replies from the test server
 void TestClient::ProcessReplies()
 {
     EndPoint listenerServerEP("localhost", 9893);
@@ -116,6 +139,7 @@ void TestClient::ProcessReplies()
     comm.stop();
 }
 
+// genreates a report of all of the tests that this client as send and recieved replies for
 void TestClient::ReportResults()
 {
     // Wait until all replies have been heard - or a max waiting time is up

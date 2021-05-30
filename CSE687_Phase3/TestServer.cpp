@@ -137,6 +137,7 @@ void TestServer::StopServer()
 {
 }
 
+/*
 bool TestServer::SetOutputFile(const std::string& aFilePath)
 {
     if (_mgr == nullptr) _mgr = TestManager::GetInstance();
@@ -177,7 +178,8 @@ void TestServer::StartTest(const std::string& aTestName, const LogLevel aLogLeve
     comm.postMessage(testRequest);
     comm.stop();
 }
-
+*/
+/*
 void TestServer::StopTest()
 {
     //create the comm connection
@@ -246,4 +248,5 @@ void TestServer::ReportResults()
         lgr->LogResult(_msgsRcvd.deQ());
         lgr->LogMessage("--------------------------------------------------------------\n\n");
     }
-}
+    
+} */
